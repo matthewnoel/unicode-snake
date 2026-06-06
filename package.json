@@ -1,6 +1,25 @@
 {
 	"name": "unicode-snake",
-	"version": "0.0.1",
+	"version": "0.1.0",
+	"description": "A tiny snake game Svelte component rendered entirely with Unicode characters.",
+	"keywords": [
+		"snake",
+		"game",
+		"svelte",
+		"svelte-component",
+		"unicode",
+		"emoji"
+	],
+	"license": "MIT",
+	"author": "Matthew Noel <matthew.w.noel@gmail.com>",
+	"homepage": "https://github.com/matthewnoel/unicode-snake#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/matthewnoel/unicode-snake.git"
+	},
+	"bugs": {
+		"url": "https://github.com/matthewnoel/unicode-snake/issues"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
