@@ -1,6 +1,6 @@
 {
 	"name": "unicode-snake",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"description": "A tiny snake game Svelte component rendered entirely with Unicode characters.",
 	"keywords": [
 		"snake",
@@ -32,7 +32,7 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
-		"test:unit": "vitest"
+		"test:unit": "vitest run"
 	},
 	"exports": {
 		".": {
@@ -46,28 +46,30 @@
 		"!dist/**/*.spec.*"
 	],
 	"peerDependencies": {
-		"svelte": "^4.0.0"
+		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.28.1",
-		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/kit": "^2.0.0",
-		"@sveltejs/package": "^2.0.0",
-		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@eslint/js": "^9.39.2",
+		"@playwright/test": "^1.57.0",
+		"@types/node": "^22.10.0",
+		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/kit": "^2.49.2",
+		"@sveltejs/package": "^2.5.0",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@types/eslint": "^9.6.0",
-		"eslint": "^9.0.0",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.36.0",
-		"globals": "^15.0.0",
-		"prettier": "^3.1.1",
-		"prettier-plugin-svelte": "^3.1.2",
-		"publint": "^0.1.9",
-		"svelte": "^4.2.7",
-		"svelte-check": "^3.6.0",
-		"typescript": "^5.0.0",
-		"typescript-eslint": "^8.0.0",
-		"vite": "^5.0.11",
-		"vitest": "^2.0.0"
+		"eslint": "^9.39.2",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.13.1",
+		"globals": "^16.5.0",
+		"prettier": "^3.7.4",
+		"prettier-plugin-svelte": "^3.4.1",
+		"publint": "^0.3.0",
+		"svelte": "^5.46.0",
+		"svelte-check": "^4.3.5",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.50.0",
+		"vite": "^7.3.0",
+		"vitest": "^4.0.15"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",

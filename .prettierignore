@@ -2,3 +2,9 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Build & test output
+dist
+.svelte-kit
+test-results
+playwright-report
