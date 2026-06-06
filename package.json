@@ -1,6 +1,6 @@
 {
 	"name": "unicode-snake",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "A tiny snake game Svelte component rendered entirely with Unicode characters.",
 	"keywords": [
 		"snake",
