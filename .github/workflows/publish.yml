@@ -14,13 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # NOTE: do not set `registry-url` here. It makes setup-node write an
+      # .npmrc with a placeholder `_authToken`, which hijacks publish auth and
+      # prevents OIDC Trusted Publishing (causes a misleading E404).
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
 
       # Trusted Publishing / OIDC requires a recent npm (>= 11.5.1).
       - run: npm install -g npm@latest
+
+      - run: node -v && npm -v
 
       - run: npm ci
 
