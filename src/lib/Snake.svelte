@@ -179,28 +179,28 @@
 	let unicodeRows = $state(getUnicodeRows());
 </script>
 
-<div id="outer-snake">
-	<div id="inner-snake">
-		<div id="snake-grid">
+<div class="outer-snake">
+	<div class="inner-snake">
+		<div class="snake-grid">
 			{#each unicodeRows as row, index (index)}
 				<span class="snake-grid-row">{row}</span>
 				<br />
 			{/each}
 		</div>
-		<div id="score-container">
-			<div id="left">
+		<div class="score-container">
+			<div class="score-left">
 				<p>Score:</p>
 				<p>{tail.length}</p>
 			</div>
-			<div id="right">
+			<div class="score-right">
 				<p>High Score:</p>
 				<p>{Math.max(tail.length, highScore)}</p>
 			</div>
 		</div>
 		{#if !isPlaying}
-			<input id="play-button" type="button" value="Play" onclick={play} />
+			<input class="play-button" type="button" value="Play" onclick={play} />
 		{:else}
-			<div id="direction-buttons">
+			<div class="direction-buttons">
 				<div class="button-row">
 					<button class="vertical-button" onclick={() => changeDirection(Orientation.North)}
 						>↑</button
@@ -225,47 +225,95 @@
 </div>
 
 <style>
-	#outer-snake {
+	/*
+	 * The component is meant to "drop in and just work", so it can't assume
+	 * anything about the host page. Svelte scopes these selectors (preventing
+	 * the styles from leaking out), but scoping is not a Shadow DOM boundary:
+	 * inherited properties still cascade in from ancestors. The :where()
+	 * resets below neutralise the host's inherited typography/box model
+	 * without raising specificity, so the host can still intentionally
+	 * override us if it wants to.
+	 */
+	.outer-snake,
+	.outer-snake :where(*),
+	.outer-snake :where(*)::before,
+	.outer-snake :where(*)::after {
+		box-sizing: border-box;
+	}
+	.outer-snake {
 		display: flex;
 		width: 100%;
 		flex-direction: column;
 		align-items: center;
+		/* Neutralise inherited text layout that would distort the grid. */
+		direction: ltr;
+		text-align: left;
+		letter-spacing: normal;
+		word-spacing: normal;
+		font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', system-ui, sans-serif;
 	}
-	#inner-snake {
+	.inner-snake {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 	}
-	#snake-grid {
-		display: block !important;
+	.snake-grid {
+		display: block;
+		/*
+		 * The board is square only if every glyph shares one cell size, so
+		 * pin the typography here rather than inheriting it from the host.
+		 */
+		font-size: 1rem;
+		line-height: 1rem;
+		letter-spacing: normal;
+		word-spacing: normal;
+		white-space: pre;
+		direction: ltr;
+		text-align: left;
 	}
-	#score-container {
+	.snake-grid-row {
+		font-size: 1rem;
+		line-height: 1rem;
+		white-space: pre;
+	}
+	.score-container {
 		width: 100%;
 		display: flex;
 		flex-direction: row;
 		flex-wrap: nowrap;
 		justify-content: space-between;
 	}
-	p {
+	.score-container p {
 		margin: 0;
 		padding: 0;
 		font-size: 1rem;
 		line-height: 1rem;
 		font-weight: 600;
 	}
-	#left {
+	.score-left {
 		text-align: left;
 	}
-	#right {
+	.score-right {
 		text-align: right;
 	}
-	#play-button {
+	.play-button {
 		margin-top: 1rem;
+		padding: 0.5rem 1.5rem;
+		font: inherit;
+		font-size: 1rem;
+		color: inherit;
+		background-color: #f0f0f0;
+		border: 2px solid #ccc;
+		border-radius: 0.25rem;
+		cursor: pointer;
 	}
-	.snake-grid-row {
-		line-height: 1rem !important;
+	.play-button:hover {
+		background-color: #e0e0e0;
 	}
-	#direction-buttons {
+	.play-button:active {
+		background-color: #d0d0d0;
+	}
+	.direction-buttons {
 		margin-top: 1rem;
 		display: flex;
 		flex-direction: column;
@@ -286,7 +334,12 @@
 		height: 2.5rem;
 		font-size: 1.2rem;
 	}
-	button {
+	.direction-buttons button {
+		margin: 0;
+		padding: 0;
+		font-family: inherit;
+		line-height: normal;
+		color: inherit;
 		background-color: #f0f0f0;
 		border: 2px solid #ccc;
 		border-radius: 0.25rem;
@@ -295,10 +348,10 @@
 		align-items: center;
 		justify-content: center;
 	}
-	button:hover {
+	.direction-buttons button:hover {
 		background-color: #e0e0e0;
 	}
-	button:active {
+	.direction-buttons button:active {
 		background-color: #d0d0d0;
 	}
 </style>
