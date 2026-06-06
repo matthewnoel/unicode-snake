@@ -1,9 +1,30 @@
 <script lang="ts">
-	export let backgroundChar = '⬜️';
-	export let playerChar = '😄';
-	export let tailChar = '🍏';
-	export let foodChar = '🍎';
 	import { onMount } from 'svelte';
+
+	interface Props {
+		/** Character drawn on empty tiles. */
+		backgroundChar?: string;
+		/** Character for the snake's head. */
+		playerChar?: string;
+		/** Character for each tail segment. */
+		tailChar?: string;
+		/** Character for the food to collect. */
+		foodChar?: string;
+		/**
+		 * localStorage key used to persist the high score across sessions.
+		 * When omitted (or in a non-browser environment) the high score is
+		 * tracked for the current session only and never written to storage.
+		 */
+		highScoreKey?: string;
+	}
+
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	}: Props = $props();
 
 	enum Orientation {
 		North,
@@ -12,13 +33,14 @@
 		West
 	}
 
-	let tail: Array<[number, number]> = [];
+	let highScore = $state(0);
+	let tail: Array<[number, number]> = $state([]);
 	let playerX = 0;
 	let playerY = 0;
 	let heartX = 1;
 	let heartY = 1;
 	let playerOrientation = Orientation.East;
-	let isPlaying = false;
+	let isPlaying = $state(false);
 
 	const sideLength = 6;
 	const getUnicodeCharacter = (x: number, y: number) => {
@@ -57,7 +79,22 @@
 		heartX = newHeartX;
 		heartY = newHeartY;
 	};
-	const die = () => (isPlaying = false);
+
+	const canPersist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
+	const getStoredHighScore = () => {
+		if (!canPersist()) return 0;
+		const parsed = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
+		return isNaN(parsed) ? 0 : parsed;
+	};
+	const trySetHighScore = (newScore: number) => {
+		if (newScore <= highScore) return;
+		highScore = newScore;
+		if (canPersist()) localStorage.setItem(highScoreKey, newScore.toString());
+	};
+	const die = () => {
+		trySetHighScore(tail.length);
+		isPlaying = false;
+	};
 	const move = () => {
 		const translation = [
 			[0, -1],
@@ -79,6 +116,7 @@
 		if (isTail(newTail, newPlayerX, newPlayerY)) return die();
 
 		tail = newTail;
+		trySetHighScore(tail.length);
 		playerX = newPlayerX;
 		playerY = newPlayerY;
 
@@ -99,37 +137,168 @@
 		spawn();
 		tick();
 	};
-	const handleKeydown = (event: KeyboardEvent) => {
+
+	const changeDirection = (direction: Orientation) => {
 		if (!isPlaying) return;
-		switch (event.key) {
-			case 'ArrowUp':
-				playerOrientation = Orientation.North;
-				break;
-			case 'ArrowRight':
-				playerOrientation = Orientation.East;
-				break;
-			case 'ArrowDown':
-				playerOrientation = Orientation.South;
-				break;
-			case 'ArrowLeft':
-				playerOrientation = Orientation.West;
-				break;
-			default:
-				break;
+		if (
+			tail.length > 0 &&
+			((direction === Orientation.North && playerOrientation === Orientation.South) ||
+				(direction === Orientation.East && playerOrientation === Orientation.West) ||
+				(direction === Orientation.South && playerOrientation === Orientation.North) ||
+				(direction === Orientation.West && playerOrientation === Orientation.East))
+		) {
+			die();
+			return;
 		}
+		playerOrientation = direction;
 	};
 	onMount(() => {
+		highScore = getStoredHighScore();
+		const handleKeydown = (event: KeyboardEvent) => {
+			if (!isPlaying) return;
+			switch (event.key) {
+				case 'ArrowUp':
+					changeDirection(Orientation.North);
+					break;
+				case 'ArrowRight':
+					changeDirection(Orientation.East);
+					break;
+				case 'ArrowDown':
+					changeDirection(Orientation.South);
+					break;
+				case 'ArrowLeft':
+					changeDirection(Orientation.West);
+					break;
+				default:
+					break;
+			}
+		};
 		window.addEventListener('keydown', handleKeydown);
 		return () => window.removeEventListener('keydown', handleKeydown);
 	});
-	let unicodeRows = getUnicodeRows();
+	let unicodeRows = $state(getUnicodeRows());
 </script>
 
-<p>Score: {tail.length}</p>
-{#each unicodeRows as row}
-	<span>{row}</span>
-	<br />
-{/each}
-{#if !isPlaying}
-	<input type="button" value="Play" on:click={play} />
-{/if}
+<div id="outer-snake">
+	<div id="inner-snake">
+		<div id="snake-grid">
+			{#each unicodeRows as row, index (index)}
+				<span class="snake-grid-row">{row}</span>
+				<br />
+			{/each}
+		</div>
+		<div id="score-container">
+			<div id="left">
+				<p>Score:</p>
+				<p>{tail.length}</p>
+			</div>
+			<div id="right">
+				<p>High Score:</p>
+				<p>{Math.max(tail.length, highScore)}</p>
+			</div>
+		</div>
+		{#if !isPlaying}
+			<input id="play-button" type="button" value="Play" onclick={play} />
+		{:else}
+			<div id="direction-buttons">
+				<div class="button-row">
+					<button class="vertical-button" onclick={() => changeDirection(Orientation.North)}
+						>↑</button
+					>
+				</div>
+				<div class="button-row">
+					<button class="horizontal-button" onclick={() => changeDirection(Orientation.West)}
+						>←</button
+					>
+					<button class="horizontal-button" onclick={() => changeDirection(Orientation.East)}
+						>→</button
+					>
+				</div>
+				<div class="button-row">
+					<button class="vertical-button" onclick={() => changeDirection(Orientation.South)}
+						>↓</button
+					>
+				</div>
+			</div>
+		{/if}
+	</div>
+</div>
+
+<style>
+	#outer-snake {
+		display: flex;
+		width: 100%;
+		flex-direction: column;
+		align-items: center;
+	}
+	#inner-snake {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	#snake-grid {
+		display: block !important;
+	}
+	#score-container {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+	p {
+		margin: 0;
+		padding: 0;
+		font-size: 1rem;
+		line-height: 1rem;
+		font-weight: 600;
+	}
+	#left {
+		text-align: left;
+	}
+	#right {
+		text-align: right;
+	}
+	#play-button {
+		margin-top: 1rem;
+	}
+	.snake-grid-row {
+		line-height: 1rem !important;
+	}
+	#direction-buttons {
+		margin-top: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+	}
+	.button-row {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.vertical-button {
+		width: 3rem;
+		height: 2.5rem;
+		font-size: 1.2rem;
+	}
+	.horizontal-button {
+		width: 2.5rem;
+		height: 2.5rem;
+		font-size: 1.2rem;
+	}
+	button {
+		background-color: #f0f0f0;
+		border: 2px solid #ccc;
+		border-radius: 0.25rem;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	button:hover {
+		background-color: #e0e0e0;
+	}
+	button:active {
+		background-color: #d0d0d0;
+	}
+</style>

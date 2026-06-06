@@ -23,7 +23,7 @@ A tiny [Svelte](https://svelte.dev) component that renders a playable snake game
 npm install unicode-snake
 ```
 
-Svelte 4 is a peer dependency, so make sure it's installed in your project.
+Svelte 5 is a peer dependency, so make sure it's installed in your project.
 
 ## Usage
 
@@ -43,20 +43,31 @@ Every tile is a character, so you can re-theme the whole game by passing differe
 <Snake backgroundChar="⬛️" playerChar="🐍" tailChar="🟩" foodChar="🍓" />
 ```
 
+### Persisting the high score
+
+The board always tracks a high score for the current session. To keep it across reloads, pass a `highScoreKey` — it's used as the `localStorage` key:
+
+```svelte
+<Snake highScoreKey="my-app-snake-high-score" />
+```
+
+When `highScoreKey` is omitted (or when there's no `localStorage`, e.g. during server-side rendering), nothing is written to storage and the high score simply resets each session. Give separate boards distinct keys so they don't clobber one another.
+
 ## Props
 
-| Prop             | Type     | Default | Description                          |
-| ---------------- | -------- | ------- | ------------------------------------ |
-| `backgroundChar` | `string` | `⬜️`    | Character drawn on empty tiles.      |
-| `playerChar`     | `string` | `😄`    | Character for the snake's head.      |
-| `tailChar`       | `string` | `🍏`    | Character for each tail segment.     |
-| `foodChar`       | `string` | `🍎`    | Character for the food to collect.   |
+| Prop             | Type     | Default | Description                                                                 |
+| ---------------- | -------- | ------- | --------------------------------------------------------------------------- |
+| `backgroundChar` | `string` | `⬜️`    | Character drawn on empty tiles.                                             |
+| `playerChar`     | `string` | `😄`    | Character for the snake's head.                                             |
+| `tailChar`       | `string` | `🍏`    | Character for each tail segment.                                            |
+| `foodChar`       | `string` | `🍎`    | Character for the food to collect.                                          |
+| `highScoreKey`   | `string` | `''`    | `localStorage` key for persisting the high score. Empty means session-only. |
 
 ## Controls
 
 - Press **Play** to start (or restart after a game over).
-- Use the **arrow keys** to change direction.
-- The game ends if you hit a wall or run into your own tail. Your score is the length of the tail.
+- Steer with the **arrow keys**, or the on-screen **direction buttons** (handy on touch screens).
+- The game ends if you hit a wall, run into your own tail, or reverse directly back into yourself. Your score is the length of the tail, and the best score so far is shown alongside it.
 
 ## Development
 
