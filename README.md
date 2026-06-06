@@ -1,6 +1,12 @@
 # unicode-snake
 
+[![npm version](https://img.shields.io/npm/v/unicode-snake.svg)](https://www.npmjs.com/package/unicode-snake)
+[![license](https://img.shields.io/npm/l/unicode-snake.svg)](./LICENSE)
+[![Publish to npm](https://github.com/matthewnoel/unicode-snake/actions/workflows/publish.yml/badge.svg)](https://github.com/matthewnoel/unicode-snake/actions/workflows/publish.yml)
+
 A tiny [Svelte](https://svelte.dev) component that renders a playable snake game using nothing but Unicode characters. Drop it onto a page, press **Play**, and steer with the arrow keys.
+
+> Every release is published to npm with [provenance attestations](https://docs.npmjs.com/generating-provenance-statements) via GitHub Actions [Trusted Publishing](https://docs.npmjs.com/trusted-publishers) — no tokens involved.
 
 ```
 ⬜️⬜️⬜️⬜️⬜️⬜️

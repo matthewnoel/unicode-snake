@@ -12,12 +12,12 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # NOTE: do not set `registry-url` here. It makes setup-node write an
       # .npmrc with a placeholder `_authToken`, which hijacks publish auth and
       # prevents OIDC Trusted Publishing (causes a misleading E404).
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
 
