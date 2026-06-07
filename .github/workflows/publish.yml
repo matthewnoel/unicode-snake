@@ -1,11 +1,25 @@
 name: Publish to npm
 
+# Every merge to `main` publishes a release. By default this is a patch bump on
+# top of whatever is currently on npm. To cut a larger (minor/major) release,
+# bump `version` in package.json above the published version in your PR — the
+# workflow will honor that version instead of patching.
+#
+# Note: we never push the bumped version back to `main` (the branch rule
+# requires a PR before merging). The committed package.json version is an
+# "intent floor"; the true latest version lives on npm + git tags + Releases.
+
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+
+# Serialize publishes so two quick merges can't race to the same version.
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write # create + push the release tag and the GitHub Release
   id-token: write # required for Trusted Publishing (OIDC) and provenance
 
 jobs:
@@ -13,13 +27,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # full history so release notes can diff against the last tag
 
       # NOTE: do not set `registry-url` here. It makes setup-node write an
       # .npmrc with a placeholder `_authToken`, which hijacks publish auth and
       # prevents OIDC Trusted Publishing (causes a misleading E404).
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: .nvmrc
 
       # Trusted Publishing / OIDC requires a recent npm (>= 11.5.1).
       - run: npm install -g npm@latest
@@ -28,4 +44,43 @@ jobs:
 
       - run: npm ci
 
+      - name: Resolve target version
+        id: version
+        run: |
+          current=$(node -p "require('./package.json').version")
+          published=$(npm view unicode-snake version 2>/dev/null || echo 0.0.0)
+
+          if npx --yes semver "$current" -r ">$published" >/dev/null 2>&1; then
+            # package.json already names a larger version than what's on npm.
+            target="$current"
+            echo "package.json ($current) is ahead of npm ($published) — releasing $target"
+          else
+            # Default: patch-bump whatever is currently published.
+            target=$(npx --yes semver "$published" -i patch)
+            echo "Patch-bumping npm ($published) -> $target"
+          fi
+
+          # Apply to the working tree only (not committed/pushed back to main).
+          npm version "$target" --no-git-tag-version --allow-same-version
+
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Guard against republishing an existing version
+        run: |
+          if npm view "unicode-snake@${{ steps.version.outputs.target }}" version >/dev/null 2>&1; then
+            echo "::error::unicode-snake@${{ steps.version.outputs.target }} is already on npm — nothing to do"
+            exit 1
+          fi
+
       - run: npm publish --access public --provenance
+
+      - name: Tag the release and publish notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="v${{ steps.version.outputs.target }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "$tag"
+          git push origin "$tag"
+          gh release create "$tag" --title "$tag" --generate-notes
