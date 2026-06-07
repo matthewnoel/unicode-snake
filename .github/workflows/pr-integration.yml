@@ -1,0 +1,41 @@
+name: 🌀 PR Integration Workflow
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+
+jobs:
+  build:
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🏃 Run actions/checkout@v4
+        uses: actions/checkout@v4
+      - name: 🏃 Run actions/setup-node@v4
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: 🪜 Install dependencies
+        run: npm ci
+      - name: 🧑‍⚖️ Generate license file
+        run: npm run licenses
+      - name: 📝 Format project
+        run: npm run format
+      - name: 💾 Add and commit changes
+        uses: EndBug/add-and-commit@v9.1.4
+      - name: 🔍 Lint project
+        run: npm run lint
+      - name: ✅ Svelte check
+        run: npm run check
+      - name: 🏗️ Build project
+        run: npm run build
+      - name: 🎭 Set up playwright
+        run: npx playwright install
+      - name: 🧪 Run tests
+        run: npm test
