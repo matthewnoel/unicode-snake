@@ -1,0 +1,70 @@
+<script lang="ts">
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	} = $props();
+
+	const D = [-6, 1, 6, -1];
+	let s = $state([0]);
+	let f = $state(7);
+	let playing = $state(false);
+	let hi = $state(0);
+	let dir = 1,
+		nd = 1,
+		timer: ReturnType<typeof setInterval>;
+	const R = () => (Math.random() * 6) | 0;
+
+	let board = $derived.by(() => {
+		let r = ['', '', '', '', '', ''];
+		for (let i = 0; i < 36; i++)
+			r[(i / 6) | 0] += i == s[0] ? playerChar : i == f ? foodChar : s.includes(i) ? tailChar : backgroundChar;
+		return r;
+	});
+	let score = $derived(s.length - 1);
+	let best = $derived(Math.max(score, hi));
+
+	const spawn = () => {
+		do f = R() + R() * 6;
+		while (s.includes(f));
+	};
+
+	const move = () => {
+		let n = s[0] + D[(dir = nd)];
+		if (n < 0 || n > 35 || (n % 6 - s[0] % 6) ** 2 > 1) return (playing = false);
+		let eat = n == f,
+			b = eat ? s : s.slice(0, -1);
+		if (b.includes(n)) return (playing = false);
+		s = [n, ...b];
+		if (score > hi) {
+			hi = score;
+			if (highScoreKey) localStorage.setItem(highScoreKey, '' + hi);
+		}
+		eat && spawn();
+	};
+
+	const play = () => {
+		clearInterval(timer);
+		s = [0];
+		dir = nd = 1;
+		playing = true;
+		spawn();
+		timer = setInterval(move, 500);
+	};
+
+	const turn = (d: number) => {
+		if (playing && (s.length < 2 || d != (dir + 2) % 4)) nd = d;
+	};
+
+	$effect(() => {
+		if (highScoreKey) hi = +localStorage.getItem(highScoreKey)! || 0;
+		let k = (e: KeyboardEvent) => {
+			let i = 'URDL'.indexOf(e.key[5]);
+			if (i >= 0) turn(i);
+		};
+		addEventListener('keydown', k);
+		return () => removeEventListener('keydown', k);
+	});
+</script>

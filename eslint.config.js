@@ -28,6 +28,10 @@ export default [
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'dist/']
+		// `harness/` is research/optimization tooling, not shipped library code:
+		// intentionally golfed candidates and workflow scripts that use injected
+		// DSL globals (agent/parallel/phase). Lint it with the lib's rules and it
+		// trips no-undef / no-unused-expressions. Not published (files: ["dist"]).
+		ignores: ['build/', '.svelte-kit/', 'dist/', 'harness/']
 	}
 ];

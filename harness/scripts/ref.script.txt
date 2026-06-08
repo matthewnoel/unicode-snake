@@ -1,0 +1,140 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	interface Props {
+		backgroundChar?: string;
+		playerChar?: string;
+		tailChar?: string;
+		foodChar?: string;
+		highScoreKey?: string;
+	}
+
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	}: Props = $props();
+
+	const N = 6;
+	const DX = [0, 1, 0, -1]; // N E S W
+	const DY = [-1, 0, 1, 0];
+
+	let tail: Array<[number, number]> = $state([]);
+	let headX = $state(0);
+	let headY = $state(0);
+	let foodX = $state(1);
+	let foodY = $state(1);
+	let dir = 1;
+	let nextDir = 1;
+	let playing = $state(false);
+	let high = $state(0);
+	let timer: ReturnType<typeof setTimeout> | undefined;
+
+	const onSnake = (x: number, y: number) =>
+		(x === headX && y === headY) || tail.some((s) => s[0] === x && s[1] === y);
+
+	const charAt = (x: number, y: number) => {
+		if (x === headX && y === headY) return playerChar;
+		if (x === foodX && y === foodY) return foodChar;
+		if (tail.some((s) => s[0] === x && s[1] === y)) return tailChar;
+		return backgroundChar;
+	};
+
+	let board = $derived(
+		Array.from({ length: N }, (_, y) =>
+			Array.from({ length: N }, (_, x) => charAt(x, y)).join('')
+		)
+	);
+	let score = $derived(tail.length);
+	let best = $derived(Math.max(tail.length, high));
+
+	const persist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
+	const bump = (s: number) => {
+		if (s <= high) return;
+		high = s;
+		if (persist()) localStorage.setItem(highScoreKey, String(s));
+	};
+
+	const spawn = () => {
+		let x: number;
+		let y: number;
+		do {
+			x = Math.floor(Math.random() * N);
+			y = Math.floor(Math.random() * N);
+		} while (onSnake(x, y));
+		foodX = x;
+		foodY = y;
+	};
+
+	const end = () => {
+		playing = false;
+		if (timer) clearTimeout(timer);
+	};
+
+	const move = () => {
+		dir = nextDir;
+		const nx = headX + DX[dir];
+		const ny = headY + DY[dir];
+		if (nx < 0 || nx >= N || ny < 0 || ny >= N) return end();
+		const eat = nx === foodX && ny === foodY;
+		const next: Array<[number, number]> = [[headX, headY], ...tail];
+		if (!eat) next.pop();
+		if (next.some((s) => s[0] === nx && s[1] === ny)) return end();
+		tail = next;
+		headX = nx;
+		headY = ny;
+		bump(tail.length);
+		if (eat) spawn();
+	};
+
+	const tick = () => {
+		if (!playing) return;
+		move();
+		if (playing) timer = setTimeout(tick, 500);
+	};
+
+	const play = () => {
+		tail = [];
+		headX = 0;
+		headY = 0;
+		dir = 1;
+		nextDir = 1;
+		playing = true;
+		spawn();
+		timer = setTimeout(tick, 500);
+	};
+
+	const turn = (d: number) => {
+		if (!playing) return;
+		if (tail.length > 0 && d === (dir + 2) % 4) return;
+		nextDir = d;
+	};
+
+	onMount(() => {
+		if (persist()) {
+			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
+			high = isNaN(v) ? 0 : v;
+		}
+		const onKey = (e: KeyboardEvent) => {
+			if (!playing) return;
+			switch (e.key) {
+				case 'ArrowUp':
+					turn(0);
+					break;
+				case 'ArrowRight':
+					turn(1);
+					break;
+				case 'ArrowDown':
+					turn(2);
+					break;
+				case 'ArrowLeft':
+					turn(3);
+					break;
+			}
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
+</script>

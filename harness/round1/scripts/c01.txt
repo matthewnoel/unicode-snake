@@ -1,0 +1,115 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	}: {
+		backgroundChar?: string;
+		playerChar?: string;
+		tailChar?: string;
+		foodChar?: string;
+		highScoreKey?: string;
+	} = $props();
+
+	const DX = [0, 1, 0, -1]; // N E S W
+	const DY = [-1, 0, 1, 0];
+
+	let tail: Array<[number, number]> = $state([]);
+	let headX = $state(0);
+	let headY = $state(0);
+	let foodX = $state(1);
+	let foodY = $state(1);
+	let dir = 1; // committed direction
+	let next = 1; // buffered direction
+	let playing = $state(false);
+	let high = $state(0);
+	let timer: ReturnType<typeof setTimeout>;
+
+	const onTail = (x: number, y: number) => tail.some((s) => s[0] === x && s[1] === y);
+
+	let board = $derived(
+		Array.from({ length: 6 }, (_, y) =>
+			Array.from({ length: 6 }, (_, x) =>
+				x === headX && y === headY
+					? playerChar
+					: x === foodX && y === foodY
+						? foodChar
+						: onTail(x, y)
+							? tailChar
+							: backgroundChar
+			).join('')
+		)
+	);
+	let score = $derived(tail.length);
+	let best = $derived(Math.max(score, high));
+
+	const persist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
+	const bump = () => {
+		if (tail.length > high) {
+			high = tail.length;
+			if (persist()) localStorage.setItem(highScoreKey, String(high));
+		}
+	};
+
+	const spawn = () => {
+		let x: number;
+		let y: number;
+		do {
+			x = Math.floor(Math.random() * 6);
+			y = Math.floor(Math.random() * 6);
+		} while ((x === headX && y === headY) || onTail(x, y));
+		foodX = x;
+		foodY = y;
+	};
+
+	const move = () => {
+		dir = next;
+		const nx = headX + DX[dir];
+		const ny = headY + DY[dir];
+		if (nx < 0 || nx > 5 || ny < 0 || ny > 5) return (playing = false);
+		const eat = nx === foodX && ny === foodY;
+		const body: Array<[number, number]> = [[headX, headY], ...tail];
+		if (!eat) body.pop();
+		if (body.some((s) => s[0] === nx && s[1] === ny)) return (playing = false);
+		tail = body;
+		headX = nx;
+		headY = ny;
+		bump();
+		if (eat) spawn();
+	};
+
+	const tick = () => {
+		move();
+		if (playing) timer = setTimeout(tick, 500);
+	};
+
+	const play = () => {
+		tail = [];
+		headX = headY = 0;
+		dir = next = 1;
+		playing = true;
+		spawn();
+		timer = setTimeout(tick, 500);
+	};
+
+	const turn = (d: number) => {
+		if (playing && !(tail.length && d === (dir + 2) % 4)) next = d;
+	};
+
+	onMount(() => {
+		if (persist()) {
+			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
+			high = isNaN(v) ? 0 : v;
+		}
+		const onKey = (e: KeyboardEvent) => {
+			const i = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].indexOf(e.key);
+			if (i >= 0) turn(i);
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
+</script>

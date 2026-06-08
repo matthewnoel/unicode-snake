@@ -1,0 +1,72 @@
+<script lang="ts">
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	} = $props();
+
+	const D = [-6, 1, 6, -1];
+	let h = $state(0),
+		f = $state(7),
+		t: number[] = $state([]),
+		playing = $state(false),
+		hi = $state(0);
+	let dir = 1,
+		nd = 1,
+		timer: ReturnType<typeof setInterval>;
+
+	let board = $derived.by(() => {
+		let r = ['', '', '', '', '', ''];
+		for (let i = 0; i < 36; i++)
+			r[i / 6 | 0] += i == h ? playerChar : i == f ? foodChar : t.includes(i) ? tailChar : backgroundChar;
+		return r;
+	});
+	let score = $derived(t.length);
+	let best = $derived(Math.max(score, hi));
+
+	const spawn = () => {
+		do f = (Math.random() * 6 | 0) + (Math.random() * 6 | 0) * 6;
+		while (f == h || t.includes(f));
+	};
+	const end = () => {
+		playing = false;
+		clearInterval(timer);
+	};
+	const move = () => {
+		let n = h + D[dir = nd],
+			eat = n == f,
+			nt = [h, ...t];
+		eat || nt.pop();
+		if (n < 0 || n > 35 || (n % 6 - h % 6) ** 2 > 1 || nt.includes(n)) return end();
+		h = n;
+		t = nt;
+		if (t.length > hi) {
+			hi = t.length;
+			if (highScoreKey && typeof localStorage < 'u') localStorage.setItem(highScoreKey, '' + hi);
+		}
+		eat && spawn();
+	};
+	const play = () => {
+		t = [];
+		h = 0;
+		dir = nd = 1;
+		playing = true;
+		spawn();
+		timer = setInterval(move, 500);
+	};
+	const turn = (d: number) => {
+		if (playing && (!t.length || d != (dir + 2) % 4)) nd = d;
+	};
+
+	$effect(() => {
+		if (highScoreKey && typeof localStorage < 'u') hi = +localStorage.getItem(highScoreKey)! || 0;
+		let k = (e: KeyboardEvent) => {
+			let i = 'URDL'.indexOf(e.key[5]);
+			if (i >= 0) turn(i);
+		};
+		addEventListener('keydown', k);
+		return () => removeEventListener('keydown', k);
+	});
+</script>

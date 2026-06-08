@@ -1,0 +1,101 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	}: {
+		backgroundChar?: string;
+		playerChar?: string;
+		tailChar?: string;
+		foodChar?: string;
+		highScoreKey?: string;
+	} = $props();
+
+	const DX = [0, 1, 0, -1];
+	const DY = [-1, 0, 1, 0];
+
+	let head = $state(0); // flat index y*6+x
+	let tail = $state<number[]>([]); // body segments, [0]=furthest, last=nearest head
+	let food = $state(7); // (1,1)
+	let playing = $state(false);
+	let high = $state(0);
+	let cd = 1; // committed direction
+	let bd = 1; // buffered direction
+
+	let board = $derived.by(() => {
+		const a = Array(36).fill(backgroundChar);
+		for (const i of tail) a[i] = tailChar;
+		a[food] = foodChar;
+		a[head] = playerChar;
+		return Array.from({ length: 6 }, (_, y) => a.slice(y * 6, y * 6 + 6).join(''));
+	});
+	let score = $derived(tail.length);
+	let best = $derived(Math.max(tail.length, high));
+
+	function spawn() {
+		let f: number;
+		do {
+			f = (Math.random() * 6 | 0) + (Math.random() * 6 | 0) * 6;
+		} while (f === head || tail.includes(f));
+		food = f;
+	}
+
+	function move() {
+		cd = bd;
+		const nx = (head % 6) + DX[cd];
+		const ny = ((head / 6) | 0) + DY[cd];
+		if (nx < 0 || nx > 5 || ny < 0 || ny > 5) {
+			playing = false;
+			return;
+		}
+		const ni = ny * 6 + nx;
+		const eat = ni === food;
+		tail.push(head);
+		if (!eat) tail.shift();
+		if (tail.includes(ni)) {
+			playing = false;
+			return;
+		}
+		head = ni;
+		if (eat) spawn();
+		if (tail.length > high) {
+			high = tail.length;
+			if (highScoreKey && typeof localStorage !== 'undefined')
+				localStorage.setItem(highScoreKey, String(high));
+		}
+	}
+
+	function tick() {
+		move();
+		if (playing) setTimeout(tick, 500);
+	}
+
+	function play() {
+		head = 0;
+		tail = [];
+		cd = bd = 1;
+		playing = true;
+		spawn();
+		setTimeout(tick, 500);
+	}
+
+	function turn(d: number) {
+		if (!playing) return;
+		if (d !== (cd + 2) % 4 || !tail.length) bd = d;
+	}
+
+	onMount(() => {
+		if (highScoreKey && typeof localStorage !== 'undefined')
+			high = parseInt(localStorage.getItem(highScoreKey) || '') || 0;
+		const h = (e: KeyboardEvent) => {
+			const i = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].indexOf(e.key);
+			if (i >= 0) turn(i);
+		};
+		addEventListener('keydown', h);
+		return () => removeEventListener('keydown', h);
+	});
+</script>

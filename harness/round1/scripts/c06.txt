@@ -1,0 +1,125 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	interface Props {
+		backgroundChar?: string;
+		playerChar?: string;
+		tailChar?: string;
+		foodChar?: string;
+		highScoreKey?: string;
+	}
+
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	}: Props = $props();
+
+	const N = 6;
+	const DX = [0, 1, 0, -1];
+	const DY = [-1, 0, 1, 0];
+
+	let hx = 0;
+	let hy = 0;
+	let fx = 1;
+	let fy = 1;
+	let dir = 1;
+	let next = 1;
+	const body = new Set<string>();
+	let timer: ReturnType<typeof setTimeout>;
+
+	const draw = () => {
+		const rows: string[] = [];
+		for (let y = 0; y < N; y++) {
+			let s = '';
+			for (let x = 0; x < N; x++)
+				s +=
+					x === hx && y === hy
+						? playerChar
+						: x === fx && y === fy
+							? foodChar
+							: body.has(x + ',' + y)
+								? tailChar
+								: backgroundChar;
+			rows.push(s);
+		}
+		return rows;
+	};
+
+	let board = $state(draw());
+	let score = $state(0);
+	let playing = $state(false);
+	let high = $state(0);
+	let best = $derived(Math.max(score, high));
+
+	const persist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
+
+	const spawn = () => {
+		do {
+			fx = Math.floor(Math.random() * N);
+			fy = Math.floor(Math.random() * N);
+		} while ((fx === hx && fy === hy) || body.has(fx + ',' + fy));
+	};
+
+	const end = () => {
+		playing = false;
+		clearTimeout(timer);
+	};
+
+	const move = () => {
+		dir = next;
+		const nx = hx + DX[dir];
+		const ny = hy + DY[dir];
+		if (nx < 0 || nx >= N || ny < 0 || ny >= N) return end();
+		const eat = nx === fx && ny === fy;
+		body.add(hx + ',' + hy);
+		if (!eat) body.delete(body.values().next().value!);
+		if (body.has(nx + ',' + ny)) return end();
+		hx = nx;
+		hy = ny;
+		score = body.size;
+		if (score > high) {
+			high = score;
+			if (persist()) localStorage.setItem(highScoreKey, String(score));
+		}
+		if (eat) spawn();
+		board = draw();
+	};
+
+	const tick = () => {
+		move();
+		if (playing) timer = setTimeout(tick, 500);
+	};
+
+	const play = () => {
+		body.clear();
+		hx = hy = 0;
+		dir = next = 1;
+		score = 0;
+		playing = true;
+		spawn();
+		board = draw();
+		timer = setTimeout(tick, 500);
+	};
+
+	const turn = (d: number) => {
+		if (!playing) return;
+		if (body.size && d === (dir + 2) % 4) return;
+		next = d;
+	};
+
+	onMount(() => {
+		if (persist()) {
+			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
+			high = isNaN(v) ? 0 : v;
+		}
+		const onKey = (e: KeyboardEvent) => {
+			const i = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].indexOf(e.key);
+			if (i >= 0) turn(i);
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
+</script>

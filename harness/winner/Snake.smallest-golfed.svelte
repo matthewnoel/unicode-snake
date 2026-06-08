@@ -1,113 +1,67 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	let {
 		backgroundChar = '⬜️',
 		playerChar = '😄',
 		tailChar = '🍏',
 		foodChar = '🍎',
 		highScoreKey = ''
-	}: {
-		backgroundChar?: string;
-		playerChar?: string;
-		tailChar?: string;
-		foodChar?: string;
-		highScoreKey?: string;
 	} = $props();
 
-	const D = [-6, 1, 6, -1]; // N E S W: flat-index deltas
-
-	let snake = $state([0]); // cell indices i = y*6+x, head first
-	let food = $state(7); // (1,1)
+	let s = $state([0]);
+	let f = $state(7);
 	let playing = $state(false);
-	let high = $state(0);
-	let dir = 1; // committed direction
-	let nextDir = 1; // buffered input
-	let timer: ReturnType<typeof setTimeout>;
+	let hi = $state(0);
+	let dir, nd, timer: ReturnType<typeof setInterval>;
 
 	let board = $derived.by(() => {
-		const b = ['', '', '', '', '', ''];
+		let r = ['', '', '', '', '', ''];
 		for (let i = 0; i < 36; i++)
-			b[(i / 6) | 0] +=
-				i === snake[0]
-					? playerChar
-					: i === food
-						? foodChar
-						: snake.includes(i)
-							? tailChar
-							: backgroundChar;
-		return b;
+			r[(i / 6) | 0] +=
+				i == s[0] ? playerChar : i == f ? foodChar : s.includes(i) ? tailChar : backgroundChar;
+		return r;
 	});
-	let score = $derived(snake.length - 1);
-	let best = $derived(Math.max(score, high));
-
-	const persist = () => highScoreKey && typeof localStorage !== 'undefined';
+	let score = $derived(s.length - 1);
+	let best = $derived(Math.max(score, hi));
 
 	const spawn = () => {
-		let f;
-		do {
-			f = Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6) * 6;
-		} while (snake.includes(f));
-		food = f;
-	};
-
-	const end = () => {
-		playing = false;
-		clearTimeout(timer);
+		do f = ((Math.random() * 6) | 0) + ((Math.random() * 6) | 0) * 6;
+		while (s.includes(f));
 	};
 
 	const move = () => {
-		dir = nextDir; // commit one buffered turn per tick
-		const h = snake[0];
-		const ni = h + D[dir];
-		const c = h % 6;
-		if (ni < 0 || ni > 35 || (dir === 1 && c === 5) || (dir === 3 && !c)) return end(); // wall
-		const eat = ni === food;
-		const next = [ni, ...snake];
-		if (!eat) next.pop(); // drop furthest tail unless growing
-		if (next.includes(ni, 1)) return end(); // self-collision vs post-move body
-		snake = next;
-		if (eat) {
-			const sc = next.length - 1;
-			if (sc > high) {
-				high = sc;
-				if (persist()) localStorage.setItem(highScoreKey, '' + sc);
-			}
-			spawn();
+		let n = s[0] + [-6, 1, 6, -1][(dir = nd)],
+			b = n == f ? s : s.slice(0, -1);
+		if (n < 0 || n > 35 || ((n % 6) - (s[0] % 6)) ** 2 > 1 || b.includes(n))
+			return (playing = false);
+		s = [n, ...b];
+		if (score > hi) {
+			hi = score;
+			if (highScoreKey) localStorage[highScoreKey] = hi;
 		}
-	};
-
-	const tick = () => {
-		move();
-		if (playing) timer = setTimeout(tick, 500);
+		n == f && spawn();
 	};
 
 	const play = () => {
-		snake = [0];
-		dir = nextDir = 1;
+		clearInterval(timer);
+		s = [0];
+		dir = nd = 1;
 		playing = true;
 		spawn();
-		timer = setTimeout(tick, 500); // first move one tick later
+		timer = setInterval(move, 500);
 	};
 
 	const turn = (d: number) => {
-		if (!playing) return;
-		// reject 180° reversal vs committed dir (allowed only with no body)
-		if (snake.length > 1 && d === (dir + 2) % 4) return;
-		nextDir = d;
+		if (playing && (s.length < 2 || d != (dir ^ 2))) nd = d;
 	};
 
-	onMount(() => {
-		if (persist()) {
-			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0');
-			high = v || 0;
-		}
-		const onKey = (e: KeyboardEvent) => {
-			const k = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].indexOf(e.key);
-			if (k >= 0) turn(k);
+	$effect(() => {
+		if (highScoreKey) hi = +localStorage[highScoreKey] || 0;
+		let k = (e: KeyboardEvent) => {
+			let i = 'URDL'.indexOf(e.key[5]);
+			~i && turn(i);
 		};
-		window.addEventListener('keydown', onKey);
-		return () => window.removeEventListener('keydown', onKey);
+		addEventListener('keydown', k);
+		return () => removeEventListener('keydown', k);
 	});
 </script>
 

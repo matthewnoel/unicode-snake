@@ -1,110 +1,145 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	interface Props {
+		/** Character drawn on empty tiles. */
+		backgroundChar?: string;
+		/** Character for the snake's head. */
+		playerChar?: string;
+		/** Character for each tail segment. */
+		tailChar?: string;
+		/** Character for the food to collect. */
+		foodChar?: string;
+		/** localStorage key used to persist the high score across sessions. */
+		highScoreKey?: string;
+	}
+
 	let {
 		backgroundChar = '⬜️',
 		playerChar = '😄',
 		tailChar = '🍏',
 		foodChar = '🍎',
 		highScoreKey = ''
-	}: {
-		backgroundChar?: string;
-		playerChar?: string;
-		tailChar?: string;
-		foodChar?: string;
-		highScoreKey?: string;
-	} = $props();
+	}: Props = $props();
 
-	const D = [-6, 1, 6, -1]; // N E S W: flat-index deltas
+	const N = 6;
+	// 0=North 1=East 2=South 3=West
+	const DX = [0, 1, 0, -1];
+	const DY = [-1, 0, 1, 0];
 
-	let snake = $state([0]); // cell indices i = y*6+x, head first
-	let food = $state(7); // (1,1)
+	let tail: Array<[number, number]> = $state([]);
+	let headX = $state(0);
+	let headY = $state(0);
+	let foodX = $state(1);
+	let foodY = $state(1);
+	let dir = 1; // committed direction (drives movement)
+	let nextDir = 1; // buffered input, applied on the next tick
 	let playing = $state(false);
 	let high = $state(0);
-	let dir = 1; // committed direction
-	let nextDir = 1; // buffered input
-	let timer: ReturnType<typeof setTimeout>;
+	let timer: ReturnType<typeof setTimeout> | undefined;
 
-	let board = $derived.by(() => {
-		const b = ['', '', '', '', '', ''];
-		for (let i = 0; i < 36; i++)
-			b[(i / 6) | 0] +=
-				i === snake[0]
-					? playerChar
-					: i === food
-						? foodChar
-						: snake.includes(i)
-							? tailChar
-							: backgroundChar;
-		return b;
-	});
-	let score = $derived(snake.length - 1);
-	let best = $derived(Math.max(score, high));
+	const onSnake = (x: number, y: number) =>
+		(x === headX && y === headY) || tail.some((s) => s[0] === x && s[1] === y);
 
-	const persist = () => highScoreKey && typeof localStorage !== 'undefined';
+	const charAt = (x: number, y: number) => {
+		if (x === headX && y === headY) return playerChar;
+		if (x === foodX && y === foodY) return foodChar;
+		if (tail.some((s) => s[0] === x && s[1] === y)) return tailChar;
+		return backgroundChar;
+	};
+
+	let board = $derived(
+		Array.from({ length: N }, (_, y) => Array.from({ length: N }, (_, x) => charAt(x, y)).join(''))
+	);
+
+	const persist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
+	const bump = (score: number) => {
+		if (score <= high) return;
+		high = score;
+		if (persist()) localStorage.setItem(highScoreKey, String(score));
+	};
 
 	const spawn = () => {
-		let f;
+		let x: number;
+		let y: number;
 		do {
-			f = Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6) * 6;
-		} while (snake.includes(f));
-		food = f;
+			x = Math.floor(Math.random() * N);
+			y = Math.floor(Math.random() * N);
+		} while (onSnake(x, y));
+		foodX = x;
+		foodY = y;
 	};
 
 	const end = () => {
 		playing = false;
-		clearTimeout(timer);
+		if (timer) clearTimeout(timer);
 	};
 
 	const move = () => {
-		dir = nextDir; // commit one buffered turn per tick
-		const h = snake[0];
-		const ni = h + D[dir];
-		const c = h % 6;
-		if (ni < 0 || ni > 35 || (dir === 1 && c === 5) || (dir === 3 && !c)) return end(); // wall
-		const eat = ni === food;
-		const next = [ni, ...snake];
-		if (!eat) next.pop(); // drop furthest tail unless growing
-		if (next.includes(ni, 1)) return end(); // self-collision vs post-move body
-		snake = next;
-		if (eat) {
-			const sc = next.length - 1;
-			if (sc > high) {
-				high = sc;
-				if (persist()) localStorage.setItem(highScoreKey, '' + sc);
-			}
-			spawn();
-		}
+		dir = nextDir; // commit the buffered turn (one per tick)
+		const nx = headX + DX[dir];
+		const ny = headY + DY[dir];
+		if (nx < 0 || nx >= N || ny < 0 || ny >= N) return end(); // wall
+
+		const eat = nx === foodX && ny === foodY;
+		const next: Array<[number, number]> = [[headX, headY], ...tail];
+		if (!eat) next.pop(); // drop the tail end unless we grew this tick
+
+		if (next.some((s) => s[0] === nx && s[1] === ny)) return end(); // self
+
+		tail = next;
+		headX = nx;
+		headY = ny;
+		bump(tail.length);
+		if (eat) spawn();
 	};
 
 	const tick = () => {
+		if (!playing) return;
 		move();
 		if (playing) timer = setTimeout(tick, 500);
 	};
 
 	const play = () => {
-		snake = [0];
-		dir = nextDir = 1;
+		tail = [];
+		headX = 0;
+		headY = 0;
+		dir = 1;
+		nextDir = 1;
 		playing = true;
 		spawn();
-		timer = setTimeout(tick, 500); // first move one tick later
+		timer = setTimeout(tick, 500); // no instant move — first step is one tick later
 	};
 
 	const turn = (d: number) => {
 		if (!playing) return;
-		// reject 180° reversal vs committed dir (allowed only with no body)
-		if (snake.length > 1 && d === (dir + 2) % 4) return;
+		// Ignore a 180° reversal (validated against the committed direction, so a
+		// double-tap within one tick can never reverse the snake into its neck).
+		if (tail.length > 0 && d === (dir + 2) % 4) return;
 		nextDir = d;
 	};
 
 	onMount(() => {
 		if (persist()) {
-			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0');
-			high = v || 0;
+			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
+			high = isNaN(v) ? 0 : v;
 		}
 		const onKey = (e: KeyboardEvent) => {
-			const k = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].indexOf(e.key);
-			if (k >= 0) turn(k);
+			if (!playing) return;
+			switch (e.key) {
+				case 'ArrowUp':
+					turn(0);
+					break;
+				case 'ArrowRight':
+					turn(1);
+					break;
+				case 'ArrowDown':
+					turn(2);
+					break;
+				case 'ArrowLeft':
+					turn(3);
+					break;
+			}
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
@@ -122,11 +157,11 @@
 		<div class="score-container">
 			<div class="score-left">
 				<p>Score:</p>
-				<p>{score}</p>
+				<p>{tail.length}</p>
 			</div>
 			<div class="score-right">
 				<p>High Score:</p>
-				<p>{best}</p>
+				<p>{Math.max(tail.length, high)}</p>
 			</div>
 		</div>
 		{#if !playing}
