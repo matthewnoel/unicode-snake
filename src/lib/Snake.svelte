@@ -1,188 +1,120 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	interface Props {
-		/** Character drawn on empty tiles. */
-		backgroundChar?: string;
-		/** Character for the snake's head. */
-		playerChar?: string;
-		/** Character for each tail segment. */
-		tailChar?: string;
-		/** Character for the food to collect. */
-		foodChar?: string;
-		/**
-		 * localStorage key used to persist the high score across sessions.
-		 * When omitted (or in a non-browser environment) the high score is
-		 * tracked for the current session only and never written to storage.
-		 */
-		highScoreKey?: string;
-	}
-
 	let {
 		backgroundChar = '⬜️',
 		playerChar = '😄',
 		tailChar = '🍏',
 		foodChar = '🍎',
 		highScoreKey = ''
-	}: Props = $props();
+	}: {
+		backgroundChar?: string;
+		playerChar?: string;
+		tailChar?: string;
+		foodChar?: string;
+		highScoreKey?: string;
+	} = $props();
 
-	enum Orientation {
-		North,
-		East,
-		South,
-		West
-	}
+	const D = [-6, 1, 6, -1]; // N E S W: flat-index deltas
 
-	let highScore = $state(0);
-	let tail: Array<[number, number]> = $state([]);
-	let playerX = 0;
-	let playerY = 0;
-	let heartX = 1;
-	let heartY = 1;
-	let playerOrientation = Orientation.East;
-	let isPlaying = $state(false);
+	let snake = $state([0]); // cell indices i = y*6+x, head first
+	let food = $state(7); // (1,1)
+	let playing = $state(false);
+	let high = $state(0);
+	let dir = 1; // committed direction
+	let nextDir = 1; // buffered input
+	let timer: ReturnType<typeof setTimeout>;
 
-	const sideLength = 6;
-	const getUnicodeCharacter = (x: number, y: number) => {
-		if (playerX === x && playerY === y) return playerChar;
-		if (heartX === x && heartY === y) return foodChar;
+	let board = $derived.by(() => {
+		const b = ['', '', '', '', '', ''];
+		for (let i = 0; i < 36; i++)
+			b[(i / 6) | 0] +=
+				i === snake[0]
+					? playerChar
+					: i === food
+						? foodChar
+						: snake.includes(i)
+							? tailChar
+							: backgroundChar;
+		return b;
+	});
+	let score = $derived(snake.length - 1);
+	let best = $derived(Math.max(score, high));
 
-		for (const element of tail) {
-			if (element[0] === x && element[1] === y) return tailChar;
-		}
-
-		return backgroundChar;
-	};
-	const getUnicodeRows = () => {
-		const retval = [];
-		for (let y = 0; y < sideLength; y++) {
-			let row = '';
-			for (let x = 0; x < sideLength; x++) {
-				row += getUnicodeCharacter(x, y);
-			}
-			retval.push(row);
-		}
-		return retval;
-	};
-	const isTail = (t: Array<[number, number]>, x: number, y: number) =>
-		t.some((e) => e[0] === x && e[1] === y);
+	const persist = () => highScoreKey && typeof localStorage !== 'undefined';
 
 	const spawn = () => {
-		let newHeartX = Math.floor(Math.random() * sideLength);
-		let newHeartY = Math.floor(Math.random() * sideLength);
-
-		while ((newHeartX === playerX && newHeartY === playerY) || isTail(tail, newHeartX, newHeartY)) {
-			newHeartX = Math.floor(Math.random() * sideLength);
-			newHeartY = Math.floor(Math.random() * sideLength);
-		}
-
-		heartX = newHeartX;
-		heartY = newHeartY;
+		let f;
+		do {
+			f = Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6) * 6;
+		} while (snake.includes(f));
+		food = f;
 	};
 
-	const canPersist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
-	const getStoredHighScore = () => {
-		if (!canPersist()) return 0;
-		const parsed = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
-		return isNaN(parsed) ? 0 : parsed;
+	const end = () => {
+		playing = false;
+		clearTimeout(timer);
 	};
-	const trySetHighScore = (newScore: number) => {
-		if (newScore <= highScore) return;
-		highScore = newScore;
-		if (canPersist()) localStorage.setItem(highScoreKey, newScore.toString());
-	};
-	const die = () => {
-		trySetHighScore(tail.length);
-		isPlaying = false;
-	};
+
 	const move = () => {
-		const translation = [
-			[0, -1],
-			[1, 0],
-			[0, 1],
-			[-1, 0]
-		][playerOrientation];
-		const newPlayerX = playerX + translation[0];
-		const newPlayerY = playerY + translation[1];
-
-		if (newPlayerX < 0 || newPlayerX >= sideLength || newPlayerY < 0 || newPlayerY >= sideLength)
-			return die();
-
-		const isIntersectingHeart = newPlayerX === heartX && newPlayerY === heartY;
-		const start = isIntersectingHeart ? 0 : 1;
-		const tuple: [number, number] = [playerX, playerY];
-		const newTail = tail.length === 0 && start === 1 ? tail.slice() : [...tail.slice(start), tuple];
-
-		if (isTail(newTail, newPlayerX, newPlayerY)) return die();
-
-		tail = newTail;
-		trySetHighScore(tail.length);
-		playerX = newPlayerX;
-		playerY = newPlayerY;
-
-		if (isIntersectingHeart) spawn();
-	};
-	const tick = () => {
-		if (!isPlaying) return;
-		move();
-		unicodeRows = getUnicodeRows();
-		setTimeout(() => tick(), 500);
-	};
-	const play = () => {
-		tail = [];
-		playerX = 0;
-		playerY = 0;
-		playerOrientation = Orientation.East;
-		isPlaying = true;
-		spawn();
-		tick();
-	};
-
-	const changeDirection = (direction: Orientation) => {
-		if (!isPlaying) return;
-		if (
-			tail.length > 0 &&
-			((direction === Orientation.North && playerOrientation === Orientation.South) ||
-				(direction === Orientation.East && playerOrientation === Orientation.West) ||
-				(direction === Orientation.South && playerOrientation === Orientation.North) ||
-				(direction === Orientation.West && playerOrientation === Orientation.East))
-		) {
-			die();
-			return;
-		}
-		playerOrientation = direction;
-	};
-	onMount(() => {
-		highScore = getStoredHighScore();
-		const handleKeydown = (event: KeyboardEvent) => {
-			if (!isPlaying) return;
-			switch (event.key) {
-				case 'ArrowUp':
-					changeDirection(Orientation.North);
-					break;
-				case 'ArrowRight':
-					changeDirection(Orientation.East);
-					break;
-				case 'ArrowDown':
-					changeDirection(Orientation.South);
-					break;
-				case 'ArrowLeft':
-					changeDirection(Orientation.West);
-					break;
-				default:
-					break;
+		dir = nextDir; // commit one buffered turn per tick
+		const h = snake[0];
+		const ni = h + D[dir];
+		const c = h % 6;
+		if (ni < 0 || ni > 35 || (dir === 1 && c === 5) || (dir === 3 && !c)) return end(); // wall
+		const eat = ni === food;
+		const next = [ni, ...snake];
+		if (!eat) next.pop(); // drop furthest tail unless growing
+		if (next.includes(ni, 1)) return end(); // self-collision vs post-move body
+		snake = next;
+		if (eat) {
+			const sc = next.length - 1;
+			if (sc > high) {
+				high = sc;
+				if (persist()) localStorage.setItem(highScoreKey, '' + sc);
 			}
+			spawn();
+		}
+	};
+
+	const tick = () => {
+		move();
+		if (playing) timer = setTimeout(tick, 500);
+	};
+
+	const play = () => {
+		snake = [0];
+		dir = nextDir = 1;
+		playing = true;
+		spawn();
+		timer = setTimeout(tick, 500); // first move one tick later
+	};
+
+	const turn = (d: number) => {
+		if (!playing) return;
+		// reject 180° reversal vs committed dir (allowed only with no body)
+		if (snake.length > 1 && d === (dir + 2) % 4) return;
+		nextDir = d;
+	};
+
+	onMount(() => {
+		if (persist()) {
+			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0');
+			high = v || 0;
+		}
+		const onKey = (e: KeyboardEvent) => {
+			const k = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].indexOf(e.key);
+			if (k >= 0) turn(k);
 		};
-		window.addEventListener('keydown', handleKeydown);
-		return () => window.removeEventListener('keydown', handleKeydown);
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
 	});
-	let unicodeRows = $state(getUnicodeRows());
 </script>
 
 <div class="outer-snake">
 	<div class="inner-snake">
 		<div class="snake-grid">
-			{#each unicodeRows as row, index (index)}
+			{#each board as row, index (index)}
 				<span class="snake-grid-row">{row}</span>
 				<br />
 			{/each}
@@ -190,34 +122,26 @@
 		<div class="score-container">
 			<div class="score-left">
 				<p>Score:</p>
-				<p>{tail.length}</p>
+				<p>{score}</p>
 			</div>
 			<div class="score-right">
 				<p>High Score:</p>
-				<p>{Math.max(tail.length, highScore)}</p>
+				<p>{best}</p>
 			</div>
 		</div>
-		{#if !isPlaying}
+		{#if !playing}
 			<input class="play-button" type="button" value="Play" onclick={play} />
 		{:else}
 			<div class="direction-buttons">
 				<div class="button-row">
-					<button class="vertical-button" onclick={() => changeDirection(Orientation.North)}
-						>↑</button
-					>
+					<button class="vertical-button" onclick={() => turn(0)}>↑</button>
 				</div>
 				<div class="button-row">
-					<button class="horizontal-button" onclick={() => changeDirection(Orientation.West)}
-						>←</button
-					>
-					<button class="horizontal-button" onclick={() => changeDirection(Orientation.East)}
-						>→</button
-					>
+					<button class="horizontal-button" onclick={() => turn(3)}>←</button>
+					<button class="horizontal-button" onclick={() => turn(1)}>→</button>
 				</div>
 				<div class="button-row">
-					<button class="vertical-button" onclick={() => changeDirection(Orientation.South)}
-						>↓</button
-					>
+					<button class="vertical-button" onclick={() => turn(2)}>↓</button>
 				</div>
 			</div>
 		{/if}
