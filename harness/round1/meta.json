@@ -1,0 +1,73 @@
+[
+  {
+    "label": "c01",
+    "id": "a5fd3be57160acc5a",
+    "approach": "Classic tuples: headX/headY + foodX/foodY + tail[] $state, DX/DY dir arrays, board via nested Array.from.",
+    "salvaged": false
+  },
+  {
+    "label": "c02",
+    "id": "ab12ced3446f1b504",
+    "approach": "Flat single-index cells (i=y*6+x); snake = index array (head first), food = index; board built by per-row glyph concatenation over a single 0..35 loop.",
+    "salvaged": false
+  },
+  {
+    "label": "c03",
+    "id": "a123e04c16e474701",
+    "approach": "Single packed $state object {snake,food,dir,next,playing,high}; snake as flat cell indices (y*6+x); board/score/best/playing via $derived.",
+    "salvaged": false
+  },
+  {
+    "label": "c04",
+    "id": "aece58f18043660a4",
+    "approach": "Single snake[][] (head at [0]) + food[]; single-pass string-first board build; inline array.some collisions; 4 $state.",
+    "salvaged": false
+  },
+  {
+    "label": "c05",
+    "id": "aeaeb5e49d6b42b90",
+    "approach": "Snake as flat cell-index array (y*6+x), head at index 0; unshift new head, pop unless eating; render snake[0]=player, includes()=tail. State: snake, food, dir, next, playing, high.",
+    "salvaged": false
+  },
+  {
+    "label": "c06",
+    "id": "a95a1e3e17ee4f239",
+    "approach": "Plain insertion-ordered Set of \"x,y\" body keys + manually recomputed $state board (Set non-reactive; oldest segment dropped via Set order).",
+    "salvaged": false
+  },
+  {
+    "label": "c07",
+    "id": "a652e1f60026223c7",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "c08",
+    "id": "ade71a8bce875a0be",
+    "approach": "Direction as [dx,dy] vector (cd/nd); single snake tuple array (head at index 0); reversal via component negation vs committed dir.",
+    "salvaged": false
+  },
+  {
+    "label": "c09",
+    "id": "a580cf2a1eed9d10a",
+    "approach": "Snake as single index-array (head-first, i=y*6+x); board/score/best/occ all $derived, tiny imperative move().",
+    "salvaged": false
+  },
+  {
+    "label": "c10",
+    "id": "a9d06296ec78dcc59",
+    "approach": "Index-based cells (one int per cell, tail=number[]), setInterval tick, $effect setup; aggressive ternary/operator golf.",
+    "salvaged": false
+  },
+  {
+    "label": "c11",
+    "id": "a6690c7cf066a0c95",
+    "approach": "Single flat-index snake list (head-first); board via nested Array.from/map+join closures.",
+    "salvaged": false
+  },
+  {
+    "label": "c12",
+    "id": "a99c15fa53d88ee94",
+    "approach": "Flat-index snake (head + tail as 0..35 indices); board = 36-slot bg array, paint tail/food/head, slice into 6 rows.",
+    "salvaged": false
+  }
+]

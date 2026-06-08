@@ -1,0 +1,9 @@
+# Transient / regenerable harness artifacts — the source (scripts, configs,
+# ranked results, winners, decision doc, workflow generators) is committed; these
+# are rebuilt on demand by the harness.
+_candidate/
+assembled/
+round1/assembled/
+round2/all/
+.vitest-result.json
+_neg/

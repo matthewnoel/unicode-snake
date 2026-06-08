@@ -1,0 +1,109 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	let {
+		backgroundChar = '⬜️',
+		playerChar = '😄',
+		tailChar = '🍏',
+		foodChar = '🍎',
+		highScoreKey = ''
+	} = $props();
+
+	let g = $state({
+		snake: [0],
+		food: 7,
+		dir: 1,
+		next: 1,
+		playing: false,
+		high: 0
+	});
+	let t: ReturnType<typeof setTimeout>;
+
+	let board = $derived(
+		Array.from({ length: 6 }, (_, y) =>
+			Array.from({ length: 6 }, (_, x) => {
+				const k = y * 6 + x,
+					s = g.snake;
+				return k === s[0]
+					? playerChar
+					: k === g.food
+						? foodChar
+						: s.includes(k)
+							? tailChar
+							: backgroundChar;
+			}).join('')
+		)
+	);
+	let score = $derived(g.snake.length - 1);
+	let best = $derived(Math.max(score, g.high));
+	let playing = $derived(g.playing);
+
+	const persist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';
+
+	const spawn = () => {
+		let k: number;
+		do {
+			k = Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6) * 6;
+		} while (g.snake.includes(k));
+		g.food = k;
+	};
+
+	const end = () => {
+		g.playing = false;
+		clearTimeout(t);
+	};
+
+	const move = () => {
+		const s = g.snake,
+			d = (g.dir = g.next),
+			x = (s[0] % 6) + (d & 1 ? 2 - d : 0),
+			y = (s[0] / 6 | 0) + (d & 1 ? 0 : d - 1);
+		if ((x | y) < 0 || x > 5 || y > 5) return end();
+		const k = y * 6 + x,
+			eat = k === g.food,
+			body = eat ? s : s.slice(0, -1);
+		if (body.includes(k)) return end();
+		g.snake = [k, ...body];
+		if (eat) {
+			spawn();
+			if (s.length > g.high) {
+				g.high = s.length;
+				if (persist()) localStorage.setItem(highScoreKey, String(s.length));
+			}
+		}
+	};
+
+	const tick = () => {
+		if (!g.playing) return;
+		move();
+		if (g.playing) t = setTimeout(tick, 500);
+	};
+
+	const play = () => {
+		g.snake = [0];
+		g.dir = 1;
+		g.next = 1;
+		g.playing = true;
+		spawn();
+		t = setTimeout(tick, 500);
+	};
+
+	const turn = (d: number) => {
+		if (!g.playing) return;
+		if (g.snake.length > 1 && d === (g.dir + 2) % 4) return;
+		g.next = d;
+	};
+
+	onMount(() => {
+		if (persist()) {
+			const v = parseInt(localStorage.getItem(highScoreKey) ?? '0', 10);
+			g.high = isNaN(v) ? 0 : v;
+		}
+		const onKey = (e: KeyboardEvent) => {
+			const i = 'URDL'.indexOf(e.key[5]);
+			if (i >= 0) turn(i);
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
+</script>

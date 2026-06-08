@@ -1,0 +1,618 @@
+[
+  {
+    "file": "r2-10-v11.txt",
+    "svelte": "harness/round2/all/r2-10-v11.svelte",
+    "src": 1516,
+    "gzip": 2308,
+    "min": 6394
+  },
+  {
+    "file": "r2-10-v10.txt",
+    "svelte": "harness/round2/all/r2-10-v10.svelte",
+    "src": 1572,
+    "gzip": 2320,
+    "min": 6440
+  },
+  {
+    "file": "r2-07n2.txt",
+    "svelte": "harness/round2/all/r2-07n2.svelte",
+    "src": 1645,
+    "gzip": 2327,
+    "min": 6441
+  },
+  {
+    "file": "r2-08-j1.txt",
+    "svelte": "harness/round2/all/r2-08-j1.svelte",
+    "src": 1715,
+    "gzip": 2327,
+    "min": 6470
+  },
+  {
+    "file": "r2-07m.txt",
+    "svelte": "harness/round2/all/r2-07m.svelte",
+    "src": 1650,
+    "gzip": 2329,
+    "min": 6443
+  },
+  {
+    "file": "r2-07n1.txt",
+    "svelte": "harness/round2/all/r2-07n1.svelte",
+    "src": 1647,
+    "gzip": 2329,
+    "min": 6443
+  },
+  {
+    "file": "r2-09-h.txt",
+    "svelte": "harness/round2/all/r2-09-h.svelte",
+    "src": 1711,
+    "gzip": 2330,
+    "min": 6466
+  },
+  {
+    "file": "r2-04c.txt",
+    "svelte": "harness/round2/all/r2-04c.svelte",
+    "src": 1692,
+    "gzip": 2331,
+    "min": 6438
+  },
+  {
+    "file": "r2-07L.txt",
+    "svelte": "harness/round2/all/r2-07L.svelte",
+    "src": 1696,
+    "gzip": 2332,
+    "min": 6479
+  },
+  {
+    "file": "r2-10-v9.txt",
+    "svelte": "harness/round2/all/r2-10-v9.svelte",
+    "src": 1626,
+    "gzip": 2333,
+    "min": 6482
+  },
+  {
+    "file": "r2-09-f.txt",
+    "svelte": "harness/round2/all/r2-09-f.svelte",
+    "src": 1725,
+    "gzip": 2335,
+    "min": 6471
+  },
+  {
+    "file": "r2-10-v8.txt",
+    "svelte": "harness/round2/all/r2-10-v8.svelte",
+    "src": 1637,
+    "gzip": 2336,
+    "min": 6476
+  },
+  {
+    "file": "r2-04d.txt",
+    "svelte": "harness/round2/all/r2-04d.svelte",
+    "src": 1671,
+    "gzip": 2337,
+    "min": 6412
+  },
+  {
+    "file": "r2-07k.txt",
+    "svelte": "harness/round2/all/r2-07k.svelte",
+    "src": 1726,
+    "gzip": 2337,
+    "min": 6491
+  },
+  {
+    "file": "r2-10-v5.txt",
+    "svelte": "harness/round2/all/r2-10-v5.svelte",
+    "src": 1647,
+    "gzip": 2338,
+    "min": 6480
+  },
+  {
+    "file": "r2-07j1.txt",
+    "svelte": "harness/round2/all/r2-07j1.svelte",
+    "src": 1738,
+    "gzip": 2339,
+    "min": 6495
+  },
+  {
+    "file": "r2-07j2.txt",
+    "svelte": "harness/round2/all/r2-07j2.svelte",
+    "src": 1711,
+    "gzip": 2339,
+    "min": 6489
+  },
+  {
+    "file": "r2-07i1.txt",
+    "svelte": "harness/round2/all/r2-07i1.svelte",
+    "src": 1723,
+    "gzip": 2341,
+    "min": 6493
+  },
+  {
+    "file": "r2-04b.txt",
+    "svelte": "harness/round2/all/r2-04b.svelte",
+    "src": 1740,
+    "gzip": 2342,
+    "min": 6468
+  },
+  {
+    "file": "r2-07h.txt",
+    "svelte": "harness/round2/all/r2-07h.svelte",
+    "src": 1731,
+    "gzip": 2343,
+    "min": 6487
+  },
+  {
+    "file": "r2-06-E.txt",
+    "svelte": "harness/round2/all/r2-06-E.svelte",
+    "src": 1700,
+    "gzip": 2344,
+    "min": 6520
+  },
+  {
+    "file": "r2-10-v7.txt",
+    "svelte": "harness/round2/all/r2-10-v7.svelte",
+    "src": 1640,
+    "gzip": 2344,
+    "min": 6478
+  },
+  {
+    "file": "r2-02-comb6.txt",
+    "svelte": "harness/round2/all/r2-02-comb6.svelte",
+    "src": 1698,
+    "gzip": 2345,
+    "min": 6518
+  },
+  {
+    "file": "r2-07i2.txt",
+    "svelte": "harness/round2/all/r2-07i2.svelte",
+    "src": 1707,
+    "gzip": 2345,
+    "min": 6478
+  },
+  {
+    "file": "r2-07i3.txt",
+    "svelte": "harness/round2/all/r2-07i3.svelte",
+    "src": 1719,
+    "gzip": 2345,
+    "min": 6485
+  },
+  {
+    "file": "r2-02-comb5.txt",
+    "svelte": "harness/round2/all/r2-02-comb5.svelte",
+    "src": 1702,
+    "gzip": 2346,
+    "min": 6520
+  },
+  {
+    "file": "r2-08-base2.txt",
+    "svelte": "harness/round2/all/r2-08-base2.svelte",
+    "src": 1753,
+    "gzip": 2346,
+    "min": 6533
+  },
+  {
+    "file": "r2-08-h1.txt",
+    "svelte": "harness/round2/all/r2-08-h1.svelte",
+    "src": 1741,
+    "gzip": 2346,
+    "min": 6533
+  },
+  {
+    "file": "r2-08-e4.txt",
+    "svelte": "harness/round2/all/r2-08-e4.svelte",
+    "src": 1756,
+    "gzip": 2347,
+    "min": 6534
+  },
+  {
+    "file": "r2-08-f.txt",
+    "svelte": "harness/round2/all/r2-08-f.svelte",
+    "src": 1744,
+    "gzip": 2347,
+    "min": 6534
+  },
+  {
+    "file": "r2-10-v3.txt",
+    "svelte": "harness/round2/all/r2-10-v3.svelte",
+    "src": 1673,
+    "gzip": 2347,
+    "min": 6488
+  },
+  {
+    "file": "r2-03-g2.txt",
+    "svelte": "harness/round2/all/r2-03-g2.svelte",
+    "src": 1748,
+    "gzip": 2348,
+    "min": 6568
+  },
+  {
+    "file": "r2-04a.txt",
+    "svelte": "harness/round2/all/r2-04a.svelte",
+    "src": 1761,
+    "gzip": 2348,
+    "min": 6474
+  },
+  {
+    "file": "r2-08-d3.txt",
+    "svelte": "harness/round2/all/r2-08-d3.svelte",
+    "src": 1749,
+    "gzip": 2348,
+    "min": 6525
+  },
+  {
+    "file": "r2-08-e5.txt",
+    "svelte": "harness/round2/all/r2-08-e5.svelte",
+    "src": 1737,
+    "gzip": 2348,
+    "min": 6525
+  },
+  {
+    "file": "r2-09-d.txt",
+    "svelte": "harness/round2/all/r2-09-d.svelte",
+    "src": 1731,
+    "gzip": 2348,
+    "min": 6497
+  },
+  {
+    "file": "r2-03-h.txt",
+    "svelte": "harness/round2/all/r2-03-h.svelte",
+    "src": 1762,
+    "gzip": 2349,
+    "min": 6548
+  },
+  {
+    "file": "r2-08-h3.txt",
+    "svelte": "harness/round2/all/r2-08-h3.svelte",
+    "src": 1769,
+    "gzip": 2349,
+    "min": 6537
+  },
+  {
+    "file": "r2-02-comb3.txt",
+    "svelte": "harness/round2/all/r2-02-comb3.svelte",
+    "src": 1700,
+    "gzip": 2350,
+    "min": 6519
+  },
+  {
+    "file": "r2-03-f.txt",
+    "svelte": "harness/round2/all/r2-03-f.svelte",
+    "src": 1730,
+    "gzip": 2350,
+    "min": 6569
+  },
+  {
+    "file": "r2-03-g3.txt",
+    "svelte": "harness/round2/all/r2-03-g3.svelte",
+    "src": 1740,
+    "gzip": 2350,
+    "min": 6559
+  },
+  {
+    "file": "r2-03-e.txt",
+    "svelte": "harness/round2/all/r2-03-e.svelte",
+    "src": 1736,
+    "gzip": 2351,
+    "min": 6571
+  },
+  {
+    "file": "r2-10-v6.txt",
+    "svelte": "harness/round2/all/r2-10-v6.svelte",
+    "src": 1654,
+    "gzip": 2351,
+    "min": 6482
+  },
+  {
+    "file": "r2-10-v4.txt",
+    "svelte": "harness/round2/all/r2-10-v4.svelte",
+    "src": 1671,
+    "gzip": 2352,
+    "min": 6480
+  },
+  {
+    "file": "r2-02-comb2.txt",
+    "svelte": "harness/round2/all/r2-02-comb2.svelte",
+    "src": 1711,
+    "gzip": 2353,
+    "min": 6513
+  },
+  {
+    "file": "r2-08-d1.txt",
+    "svelte": "harness/round2/all/r2-08-d1.svelte",
+    "src": 1763,
+    "gzip": 2353,
+    "min": 6529
+  },
+  {
+    "file": "r2-08-e2.txt",
+    "svelte": "harness/round2/all/r2-08-e2.svelte",
+    "src": 1742,
+    "gzip": 2353,
+    "min": 6523
+  },
+  {
+    "file": "r2-02-comb4.txt",
+    "svelte": "harness/round2/all/r2-02-comb4.svelte",
+    "src": 1726,
+    "gzip": 2354,
+    "min": 6515
+  },
+  {
+    "file": "r2-03-j.txt",
+    "svelte": "harness/round2/all/r2-03-j.svelte",
+    "src": 1719,
+    "gzip": 2354,
+    "min": 6545
+  },
+  {
+    "file": "r2-03-k.txt",
+    "svelte": "harness/round2/all/r2-03-k.svelte",
+    "src": 1741,
+    "gzip": 2354,
+    "min": 6566
+  },
+  {
+    "file": "r2-07ef.txt",
+    "svelte": "harness/round2/all/r2-07ef.svelte",
+    "src": 1768,
+    "gzip": 2354,
+    "min": 6540
+  },
+  {
+    "file": "r2-03-d2.txt",
+    "svelte": "harness/round2/all/r2-03-d2.svelte",
+    "src": 1750,
+    "gzip": 2355,
+    "min": 6575
+  },
+  {
+    "file": "r2-03-g1.txt",
+    "svelte": "harness/round2/all/r2-03-g1.svelte",
+    "src": 1726,
+    "gzip": 2355,
+    "min": 6561
+  },
+  {
+    "file": "r2-07f2.txt",
+    "svelte": "harness/round2/all/r2-07f2.svelte",
+    "src": 1771,
+    "gzip": 2356,
+    "min": 6541
+  },
+  {
+    "file": "r2-08-b5.txt",
+    "svelte": "harness/round2/all/r2-08-b5.svelte",
+    "src": 1759,
+    "gzip": 2357,
+    "min": 6544
+  },
+  {
+    "file": "r2-08-c1.txt",
+    "svelte": "harness/round2/all/r2-08-c1.svelte",
+    "src": 1755,
+    "gzip": 2357,
+    "min": 6543
+  },
+  {
+    "file": "r2-08-c2.txt",
+    "svelte": "harness/round2/all/r2-08-c2.svelte",
+    "src": 1762,
+    "gzip": 2357,
+    "min": 6552
+  },
+  {
+    "file": "r2-06-G.txt",
+    "svelte": "harness/round2/all/r2-06-G.svelte",
+    "src": 1729,
+    "gzip": 2358,
+    "min": 6545
+  },
+  {
+    "file": "r2-07e.txt",
+    "svelte": "harness/round2/all/r2-07e.svelte",
+    "src": 1764,
+    "gzip": 2358,
+    "min": 6532
+  },
+  {
+    "file": "r2-10-v2.txt",
+    "svelte": "harness/round2/all/r2-10-v2.svelte",
+    "src": 1741,
+    "gzip": 2358,
+    "min": 6532
+  },
+  {
+    "file": "r2-08-b10.txt",
+    "svelte": "harness/round2/all/r2-08-b10.svelte",
+    "src": 1775,
+    "gzip": 2359,
+    "min": 6548
+  },
+  {
+    "file": "r2-07a.txt",
+    "svelte": "harness/round2/all/r2-07a.svelte",
+    "src": 1767,
+    "gzip": 2360,
+    "min": 6533
+  },
+  {
+    "file": "r2-03-c.txt",
+    "svelte": "harness/round2/all/r2-03-c.svelte",
+    "src": 1732,
+    "gzip": 2361,
+    "min": 6560
+  },
+  {
+    "file": "r2-08-b6.txt",
+    "svelte": "harness/round2/all/r2-08-b6.svelte",
+    "src": 1747,
+    "gzip": 2361,
+    "min": 6544
+  },
+  {
+    "file": "r2-03-m.txt",
+    "svelte": "harness/round2/all/r2-03-m.svelte",
+    "src": 1775,
+    "gzip": 2362,
+    "min": 6577
+  },
+  {
+    "file": "r2-06-B.txt",
+    "svelte": "harness/round2/all/r2-06-B.svelte",
+    "src": 1760,
+    "gzip": 2362,
+    "min": 6570
+  },
+  {
+    "file": "r2-08-e1.txt",
+    "svelte": "harness/round2/all/r2-08-e1.svelte",
+    "src": 1781,
+    "gzip": 2362,
+    "min": 6543
+  },
+  {
+    "file": "r2-03-b.txt",
+    "svelte": "harness/round2/all/r2-03-b.svelte",
+    "src": 1744,
+    "gzip": 2363,
+    "min": 6564
+  },
+  {
+    "file": "r2-07b.txt",
+    "svelte": "harness/round2/all/r2-07b.svelte",
+    "src": 1747,
+    "gzip": 2363,
+    "min": 6513
+  },
+  {
+    "file": "r2-07d.txt",
+    "svelte": "harness/round2/all/r2-07d.svelte",
+    "src": 1796,
+    "gzip": 2363,
+    "min": 6529
+  },
+  {
+    "file": "r2-08-c3.txt",
+    "svelte": "harness/round2/all/r2-08-c3.svelte",
+    "src": 1751,
+    "gzip": 2363,
+    "min": 6542
+  },
+  {
+    "file": "r2-02-comb.txt",
+    "svelte": "harness/round2/all/r2-02-comb.svelte",
+    "src": 1764,
+    "gzip": 2364,
+    "min": 6542
+  },
+  {
+    "file": "r2-06-D.txt",
+    "svelte": "harness/round2/all/r2-06-D.svelte",
+    "src": 1776,
+    "gzip": 2364,
+    "min": 6575
+  },
+  {
+    "file": "r2-09-c.txt",
+    "svelte": "harness/round2/all/r2-09-c.svelte",
+    "src": 1772,
+    "gzip": 2365,
+    "min": 6557
+  },
+  {
+    "file": "r2-08-a.txt",
+    "svelte": "harness/round2/all/r2-08-a.svelte",
+    "src": 1768,
+    "gzip": 2366,
+    "min": 6549
+  },
+  {
+    "file": "r2-08-b1.txt",
+    "svelte": "harness/round2/all/r2-08-b1.svelte",
+    "src": 1759,
+    "gzip": 2366,
+    "min": 6549
+  },
+  {
+    "file": "r2-08-a4.txt",
+    "svelte": "harness/round2/all/r2-08-a4.svelte",
+    "src": 1766,
+    "gzip": 2368,
+    "min": 6557
+  },
+  {
+    "file": "r2-10-v1.txt",
+    "svelte": "harness/round2/all/r2-10-v1.svelte",
+    "src": 1779,
+    "gzip": 2369,
+    "min": 6588
+  },
+  {
+    "file": "r2-08-a2.txt",
+    "svelte": "harness/round2/all/r2-08-a2.svelte",
+    "src": 1752,
+    "gzip": 2370,
+    "min": 6534
+  },
+  {
+    "file": "r2-09-e.txt",
+    "svelte": "harness/round2/all/r2-09-e.svelte",
+    "src": 1795,
+    "gzip": 2370,
+    "min": 6508
+  },
+  {
+    "file": "r2-02-base.txt",
+    "svelte": "harness/round2/all/r2-02-base.svelte",
+    "src": 1799,
+    "gzip": 2371,
+    "min": 6592
+  },
+  {
+    "file": "r2-03-base.txt",
+    "svelte": "harness/round2/all/r2-03-base.svelte",
+    "src": 1800,
+    "gzip": 2371,
+    "min": 6592
+  },
+  {
+    "file": "r2-09-b.txt",
+    "svelte": "harness/round2/all/r2-09-b.svelte",
+    "src": 1793,
+    "gzip": 2371,
+    "min": 6592
+  },
+  {
+    "file": "r2-02-v2.txt",
+    "svelte": "harness/round2/all/r2-02-v2.svelte",
+    "src": 1793,
+    "gzip": 2372,
+    "min": 6578
+  },
+  {
+    "file": "r2-09-a.txt",
+    "svelte": "harness/round2/all/r2-09-a.svelte",
+    "src": 1751,
+    "gzip": 2372,
+    "min": 6575
+  },
+  {
+    "file": "r2-02-v4.txt",
+    "svelte": "harness/round2/all/r2-02-v4.svelte",
+    "src": 1781,
+    "gzip": 2376,
+    "min": 6577
+  },
+  {
+    "file": "r2-02-v1.txt",
+    "svelte": "harness/round2/all/r2-02-v1.svelte",
+    "src": 1792,
+    "gzip": 2377,
+    "min": 6590
+  },
+  {
+    "file": "r2-08-a3.txt",
+    "svelte": "harness/round2/all/r2-08-a3.svelte",
+    "src": 1800,
+    "gzip": 2379,
+    "min": 6567
+  }
+]

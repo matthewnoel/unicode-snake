@@ -1,0 +1,53 @@
+[
+  {
+    "label": "r2-01",
+    "id": "a1d4dc358dcc8f296",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-02",
+    "id": "a1a963ee37ff59f5f",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-03",
+    "id": "a8638f8febdd4162b",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-04",
+    "id": "a73913001a5ef565a",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-05",
+    "id": "a3c9cc46a1c19ab39",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-06",
+    "id": "af4e000858598bcdd",
+    "approach": "Golf localStorage path: bracket access + number coercion + unary-+ parse, typeof guard only where spec requires (persist). 2358 gzip.",
+    "salvaged": false
+  },
+  {
+    "label": "r2-07",
+    "id": "a97ae96a88079d29b",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-08",
+    "id": "a899bdb85d7ac9fae",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-09",
+    "id": "a6ccfe46df03ea6d4",
+    "status": "NO SCRIPT"
+  },
+  {
+    "label": "r2-10",
+    "id": "a942a5e324e45a10c",
+    "status": "NO SCRIPT"
+  }
+]
