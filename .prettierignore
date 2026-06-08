@@ -11,3 +11,8 @@ playwright-report
 
 # Generated
 THIRD_PARTY_LICENSES.txt
+
+# Research/optimization tooling — intentionally golfed code, workflow-DSL globals,
+# and a raw Svelte template fragment (template-body.html) that the HTML parser would
+# corrupt. Not shipped (files: ["dist"]).
+harness

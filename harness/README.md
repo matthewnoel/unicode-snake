@@ -91,3 +91,12 @@ A candidate must, to be measurable by this harness:
 - `run-candidate.mjs` — stage + test + CSS gate + measure → JSON.
 - `reference/Snake.svelte` — known-good normalized implementation (round-0 baseline).
 - `_candidate/` — staging area (overwritten each run).
+
+## CI / linting
+
+`harness/` is excluded from the library's lint and format pipeline (see
+`.prettierignore` and the `ignores` in `eslint.config.js`). It is research tooling,
+not shipped code: candidates are intentionally golfed, the workflow scripts use
+injected DSL globals (`agent`/`parallel`/`phase`), and `template-body.html` is a raw
+Svelte fragment that Prettier's HTML parser would corrupt. None of it ships to npm
+(`files: ["dist"]`).
