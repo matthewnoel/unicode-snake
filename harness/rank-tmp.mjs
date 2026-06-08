@@ -36,5 +36,9 @@ writeFileSync(outDir + '/../gzip-rank.json', JSON.stringify(rows, null, 2));
 
 console.log('\n=== ranked by gzip (compile-only; correctness NOT yet verified) ===');
 for (const r of rows.slice(0, 22))
-	console.log(`  ${String(r.gzip ?? 'ERR').padStart(5)} gzip  ${String(r.min ?? '').padStart(5)} min  ${r.file}  ${r.err || ''}`);
-console.log(`\ntotal measured: ${rows.length}; best gzip (unverified): ${rows[0].gzip} (${rows[0].file})`);
+	console.log(
+		`  ${String(r.gzip ?? 'ERR').padStart(5)} gzip  ${String(r.min ?? '').padStart(5)} min  ${r.file}  ${r.err || ''}`
+	);
+console.log(
+	`\ntotal measured: ${rows.length}; best gzip (unverified): ${rows[0].gzip} (${rows[0].file})`
+);

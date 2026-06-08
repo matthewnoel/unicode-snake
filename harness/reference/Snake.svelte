@@ -49,9 +49,7 @@
 	};
 
 	let board = $derived(
-		Array.from({ length: N }, (_, y) =>
-			Array.from({ length: N }, (_, x) => charAt(x, y)).join('')
-		)
+		Array.from({ length: N }, (_, y) => Array.from({ length: N }, (_, x) => charAt(x, y)).join(''))
 	);
 
 	const persist = () => highScoreKey !== '' && typeof localStorage !== 'undefined';

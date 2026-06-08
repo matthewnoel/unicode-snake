@@ -98,8 +98,7 @@ function score(): number {
 function playControl(): HTMLElement | null {
 	return (
 		(Array.from(host.querySelectorAll('input,button')).find(
-			(el) =>
-				(el as HTMLInputElement).value === 'Play' || el.textContent?.trim() === 'Play'
+			(el) => (el as HTMLInputElement).value === 'Play' || el.textContent?.trim() === 'Play'
 		) as HTMLElement) ?? null
 	);
 }

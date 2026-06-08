@@ -15,17 +15,17 @@ no partial credit.
 
 ## Round-over-round
 
-| Round | Best passing | gzip | Δ vs prev | Δ vs baseline |
-|------:|--------------|-----:|----------:|--------------:|
-| 0 (baseline) | normalized reference | 2551 | — | — |
-| 1 | `c10` flat-index + golf | **2371** | −180 (−7.1%) | −180 (−7.1%) |
-| 2 | `r2-10-v10` all-out golf | **2320** | −51 (−2.1%) | −231 (−9.1%) |
+|        Round | Best passing             |     gzip |    Δ vs prev | Δ vs baseline |
+| -----------: | ------------------------ | -------: | -----------: | ------------: |
+| 0 (baseline) | normalized reference     |     2551 |            — |             — |
+|            1 | `c10` flat-index + golf  | **2371** | −180 (−7.1%) |  −180 (−7.1%) |
+|            2 | `r2-10-v10` all-out golf | **2320** |  −51 (−2.1%) |  −231 (−9.1%) |
 
 Gains flattened (7.1% → 2.1%), and round-2 agents bottomed out around 2308–2320 —
 the 2308 candidate (`r2-10-v11`) **failed** the reversal test, i.e. going smaller
 started breaking correctness. **Stopped after round 2** (diminishing returns).
 
-For reference, the *current shipped* `src/lib/Snake.svelte` is 2689 gzip but it
+For reference, the _current shipped_ `src/lib/Snake.svelte` is 2689 gzip but it
 implements the **old** behavior (fails 6 normalized tests), so it is not a
 like-for-like comparison; 2551 (the normalized reference) is the honest baseline.
 

@@ -16,7 +16,8 @@
 	let board = $derived.by(() => {
 		let r = ['', '', '', '', '', ''];
 		for (let i = 0; i < 36; i++)
-			r[(i / 6) | 0] += i == s[0] ? playerChar : i == f ? foodChar : s.includes(i) ? tailChar : backgroundChar;
+			r[(i / 6) | 0] +=
+				i == s[0] ? playerChar : i == f ? foodChar : s.includes(i) ? tailChar : backgroundChar;
 		return r;
 	});
 	let score = $derived(s.length - 1);
@@ -30,7 +31,8 @@
 	const move = () => {
 		let n = s[0] + [-6, 1, 6, -1][(dir = nd)],
 			b = n == f ? s : s.slice(0, -1);
-		if (n < 0 || n > 35 || (n % 6 - s[0] % 6) ** 2 > 1 || b.includes(n)) return (playing = false);
+		if (n < 0 || n > 35 || ((n % 6) - (s[0] % 6)) ** 2 > 1 || b.includes(n))
+			return (playing = false);
 		s = [n, ...b];
 		if (score > hi) {
 			hi = score;

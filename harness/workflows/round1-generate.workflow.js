@@ -1,12 +1,12 @@
 export const meta = {
-  name: 'snake-script-bestofn-r1',
-  description: 'Generate 12 diverse minimal Snake <script> implementations (round 1)',
-  phases: [{ title: 'Generate', detail: '12 candidate scripts, distinct strategies' }],
-}
+	name: 'snake-script-bestofn-r1',
+	description: 'Generate 12 diverse minimal Snake <script> implementations (round 1)',
+	phases: [{ title: 'Generate', detail: '12 candidate scripts, distinct strategies' }]
+};
 
-const MR = ['Math', 'random'].join('.') // avoid literal token in script source
-const RND = MR + '()'
-const FLOOR = 'Math.floor(' + RND + ' * 6)'
+const MR = ['Math', 'random'].join('.'); // avoid literal token in script source
+const RND = MR + '()';
+const FLOOR = 'Math.floor(' + RND + ' * 6)';
 
 const SPEC = `
 You are writing the <script lang="ts"> block of a Svelte 5 snake-game component.
@@ -95,38 +95,81 @@ Return:
 `;
 
 const STRATEGIES = [
-  { id: 'c01', hint: 'Classic tuples. Separate headX/headY $state, tail as array of [x,y] tuples, food as foodX/foodY. board via nested loops. Direction via DX/DY arrays. Clean and minimal; the conservative baseline approach.' },
-  { id: 'c02', hint: 'Flat single-index cells. Every cell is i = y*6+x (0..35). Snake = array of indices (head first). Food = an index. Moves: north -6, south +6, east +1, west -1, with wall checks via column = i%6 and row = (i/6|0). Build a 36-char board string, then slice into 6 rows. Minimize the number of state vars.' },
-  { id: 'c03', hint: 'Single packed $state object holding the entire game {snake, food, dir, next, playing, high}; derive board/score/best with $derived. Explore whether one $state object compiles smaller than many separate $state vars.' },
-  { id: 'c04', hint: 'Board-string-first. Snake as array of [x,y], food as [x,y]. Build the whole board in one pass that produces a 36-char string then splits to rows. Inline collision with array.some. Few helper functions.' },
-  { id: 'c05', hint: 'Snake-as-cell-array with the head INCLUDED at index 0 (no separate head vars). On move, unshift the new head and pop unless eating. Render snake[0] as the player glyph and snake[1..] as tail. Reduce state to: snake[], food, dir, next, playing, high.' },
-  { id: 'c06', hint: 'Use a Set of occupied "x,y" keys for O(1) collision and spawn rejection, plus an ordered array for tail dropping. Investigate whether a Set helps or hurts compiled size versus array.some.' },
-  { id: 'c07', hint: 'Typed-array occupancy: a Uint8Array(36) marks occupied cells for collision and food rejection; an ordered index array tracks the snake for tail dropping. Numeric, branch-light.' },
-  { id: 'c08', hint: 'Direction stored directly as a [dx,dy] vector in state (no orientation index). Reversal check via dx === -ndx && dy === -ndy. turn(d) maps 0..3 to vectors. Snake as [x,y] tuples.' },
-  { id: 'c09', hint: 'Derived-heavy / functional. Maximize $derived (board, score, best, and an occupied lookup); keep the imperative move() as small as possible. See if derived chains compile compactly.' },
-  { id: 'c10', hint: 'Aggressive code-golf of the classic tuple approach: collapse helper functions into move()/turn(), use ternaries and combined declarations, minimize operation count and intermediate structures, while staying valid Svelte 5 TS.' },
-  { id: 'c11', hint: 'Compute rows with Array.from / map closures instead of imperative concatenation loops. Snake and food as flat indices. Aim for compiler-friendly compact output.' },
-  { id: 'c12', hint: 'Hybrid flat-index: snake as indices; build the board by starting from a 36-slot array filled with backgroundChar, then set tail indices to tailChar, food index to foodChar, head index to playerChar, then join into 6 rows. Single pass, minimal branching.' },
-]
+	{
+		id: 'c01',
+		hint: 'Classic tuples. Separate headX/headY $state, tail as array of [x,y] tuples, food as foodX/foodY. board via nested loops. Direction via DX/DY arrays. Clean and minimal; the conservative baseline approach.'
+	},
+	{
+		id: 'c02',
+		hint: 'Flat single-index cells. Every cell is i = y*6+x (0..35). Snake = array of indices (head first). Food = an index. Moves: north -6, south +6, east +1, west -1, with wall checks via column = i%6 and row = (i/6|0). Build a 36-char board string, then slice into 6 rows. Minimize the number of state vars.'
+	},
+	{
+		id: 'c03',
+		hint: 'Single packed $state object holding the entire game {snake, food, dir, next, playing, high}; derive board/score/best with $derived. Explore whether one $state object compiles smaller than many separate $state vars.'
+	},
+	{
+		id: 'c04',
+		hint: 'Board-string-first. Snake as array of [x,y], food as [x,y]. Build the whole board in one pass that produces a 36-char string then splits to rows. Inline collision with array.some. Few helper functions.'
+	},
+	{
+		id: 'c05',
+		hint: 'Snake-as-cell-array with the head INCLUDED at index 0 (no separate head vars). On move, unshift the new head and pop unless eating. Render snake[0] as the player glyph and snake[1..] as tail. Reduce state to: snake[], food, dir, next, playing, high.'
+	},
+	{
+		id: 'c06',
+		hint: 'Use a Set of occupied "x,y" keys for O(1) collision and spawn rejection, plus an ordered array for tail dropping. Investigate whether a Set helps or hurts compiled size versus array.some.'
+	},
+	{
+		id: 'c07',
+		hint: 'Typed-array occupancy: a Uint8Array(36) marks occupied cells for collision and food rejection; an ordered index array tracks the snake for tail dropping. Numeric, branch-light.'
+	},
+	{
+		id: 'c08',
+		hint: 'Direction stored directly as a [dx,dy] vector in state (no orientation index). Reversal check via dx === -ndx && dy === -ndy. turn(d) maps 0..3 to vectors. Snake as [x,y] tuples.'
+	},
+	{
+		id: 'c09',
+		hint: 'Derived-heavy / functional. Maximize $derived (board, score, best, and an occupied lookup); keep the imperative move() as small as possible. See if derived chains compile compactly.'
+	},
+	{
+		id: 'c10',
+		hint: 'Aggressive code-golf of the classic tuple approach: collapse helper functions into move()/turn(), use ternaries and combined declarations, minimize operation count and intermediate structures, while staying valid Svelte 5 TS.'
+	},
+	{
+		id: 'c11',
+		hint: 'Compute rows with Array.from / map closures instead of imperative concatenation loops. Snake and food as flat indices. Aim for compiler-friendly compact output.'
+	},
+	{
+		id: 'c12',
+		hint: 'Hybrid flat-index: snake as indices; build the board by starting from a 36-slot array filled with backgroundChar, then set tail indices to tailChar, food index to foodChar, head index to playerChar, then join into 6 rows. Single pass, minimal branching.'
+	}
+];
 
 const SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    approach: { type: 'string', description: 'one short line naming the representation/strategy used' },
-    script: { type: 'string', description: 'the complete <script lang="ts"> ... </script> block, no markup or style' },
-  },
-  required: ['approach', 'script'],
-}
+	type: 'object',
+	additionalProperties: false,
+	properties: {
+		approach: {
+			type: 'string',
+			description: 'one short line naming the representation/strategy used'
+		},
+		script: {
+			type: 'string',
+			description: 'the complete <script lang="ts"> ... </script> block, no markup or style'
+		}
+	},
+	required: ['approach', 'script']
+};
 
-phase('Generate')
+phase('Generate');
 const out = await parallel(
-  STRATEGIES.map((s) => () =>
-    agent(SPEC + '\n\n## YOUR ASSIGNED STRATEGY (candidate ' + s.id + ')\n' + s.hint, {
-      label: s.id,
-      phase: 'Generate',
-      schema: SCHEMA,
-    }).then((r) => (r ? { id: s.id, approach: r.approach, script: r.script } : null))
-  )
-)
-return out.filter(Boolean)
+	STRATEGIES.map(
+		(s) => () =>
+			agent(SPEC + '\n\n## YOUR ASSIGNED STRATEGY (candidate ' + s.id + ')\n' + s.hint, {
+				label: s.id,
+				phase: 'Generate',
+				schema: SCHEMA
+			}).then((r) => (r ? { id: s.id, approach: r.approach, script: r.script } : null))
+	)
+);
+return out.filter(Boolean);

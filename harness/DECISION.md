@@ -14,7 +14,8 @@ exercise can be **re-run against any future model** and compared apples-to-apple
 ## 2. Two decisions baked in up front
 
 ### 2a. Scope of "correct" (full parity)
-A candidate must preserve everything the shipped component does *except* where
+
+A candidate must preserve everything the shipped component does _except_ where
 noted in 2b: 6×6 board, wall/self collision, growth-on-eat, food-never-on-snake,
 500 ms tick, all 5 configurable char props, high-score tracking **and**
 `localStorage` persistence, on-screen Play + ↑/↓/←/→ buttons, the
@@ -24,15 +25,17 @@ the CSS + markup are a fixed required cost, the search was constrained to the
 the real size differences live.
 
 ### 2b. Behavioral change: normalized to a conventional snake
+
 We deliberately changed three behaviors from the old component (it had unusual
 quirks). The new, adopted behavior is:
+
 - **No instant move on Play** — the first step happens one tick (500 ms) later.
-- **A 180° reversal is ignored** (a no-op), *not* a game over.
+- **A 180° reversal is ignored** (a no-op), _not_ a game over.
 - **One-turn-per-tick input buffering** — a turn applies on the next tick, and a
   double-tap within a tick can never reverse the snake into its own neck.
 
-The old `src/lib/Snake.svelte` (2689 gzip) fails 6 of the suite's tests *by
-design* because it implements the old behavior. So it is **not** a like-for-like
+The old `src/lib/Snake.svelte` (2689 gzip) fails 6 of the suite's tests _by
+design_ because it implements the old behavior. So it is **not** a like-for-like
 size comparison; the honest baseline is a clean conventional implementation
 ("normalized reference", 2551 gzip, `reference/Snake.svelte`).
 
@@ -62,11 +65,11 @@ rounds were seeded toward the winning direction. Generators are preserved in
 
 ## 5. Results
 
-| Round | Best passing candidate | gzip | Δ prev | Δ baseline |
-|------:|------------------------|-----:|-------:|-----------:|
-| 0 | normalized reference | 2551 | — | — |
-| 1 | `c10` flat-index + golf | 2371 | −180 (−7.1%) | −180 (−7.1%) |
-| 2 | `r2-10-v10` all-out golf | **2320** | −51 (−2.1%) | −231 (−9.1%) |
+| Round | Best passing candidate   |     gzip |       Δ prev |   Δ baseline |
+| ----: | ------------------------ | -------: | -----------: | -----------: |
+|     0 | normalized reference     |     2551 |            — |            — |
+|     1 | `c10` flat-index + golf  |     2371 | −180 (−7.1%) | −180 (−7.1%) |
+|     2 | `r2-10-v10` all-out golf | **2320** |  −51 (−2.1%) | −231 (−9.1%) |
 
 - **35 of 36** verified candidates passed. Flat single-index board representation
   (`i = y*6+x`, deltas `[-6,1,6,-1]`) beat tuples, `Set`, `Uint8Array`, and
@@ -78,17 +81,17 @@ rounds were seeded toward the winning direction. Generators are preserved in
 
 ## 6. The options, and what we chose
 
-| Option | gzip | Where | Verdict |
-|--------|-----:|-------|---------|
-| Old shipped component (old behavior) | 2689 | git history | Rejected — different behavior, largest |
-| **Smallest** golfed `r2-10-v10` | 2320 | `winner/Snake.smallest-golfed.svelte` | **Runner-up, preserved** |
-| **Adopted** readable flat-index `c02` | 2451 | `winner/Snake.adopted-readable.svelte` → `src/lib/Snake.svelte` | **Chosen** |
+| Option                                | gzip | Where                                                           | Verdict                                |
+| ------------------------------------- | ---: | --------------------------------------------------------------- | -------------------------------------- |
+| Old shipped component (old behavior)  | 2689 | git history                                                     | Rejected — different behavior, largest |
+| **Smallest** golfed `r2-10-v10`       | 2320 | `winner/Snake.smallest-golfed.svelte`                           | **Runner-up, preserved**               |
+| **Adopted** readable flat-index `c02` | 2451 | `winner/Snake.adopted-readable.svelte` → `src/lib/Snake.svelte` | **Chosen**                             |
 
 **Decision: adopt the readable flat-index version (2451), not the smaller golfed one (2320).**
 
 Rationale: the golfed version saves only **131 gzip bytes (5.6%)** over the
-readable one, but pays for it with maintainability hazards in a *published,
-human-maintained* library — e.g. `dir ^ 2` for direction reversal, decoding arrow
+readable one, but pays for it with maintainability hazards in a _published,
+human-maintained_ library — e.g. `dir ^ 2` for direction reversal, decoding arrow
 keys via `'URDL'.indexOf(key[5])`, combined collision/wall expressions, and a
 dropped `typeof localStorage` guard that is only safe because Svelte effects don't
 run during SSR. The readable version captures **~94%** of the achievable reduction
@@ -99,7 +102,7 @@ for anyone who later prioritizes pure size.
 
 ## 7. How to re-run this with a future model
 
-The harness judges *any* candidate `Snake.svelte`, so it is model-agnostic.
+The harness judges _any_ candidate `Snake.svelte`, so it is model-agnostic.
 
 ```bash
 npm install --no-save jsdom            # DOM for the behavioral tests (kept out of the manifest)
@@ -124,6 +127,7 @@ smallest 2320 / reference 2551). If a future model beats 2320 **while passing al
 18 tests + the CSS gate**, that's a genuine improvement worth considering.
 
 ### Notes / gotchas for the re-run
+
 - Do **not** weaken or delete a test to make a candidate pass (the whole point is
   that the suite is the ceiling). If you change the spec, re-validate that the
   normalized reference still passes 18/18 and the old `src` still fails the

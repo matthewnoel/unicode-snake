@@ -21,11 +21,9 @@ export async function measure(svelteFilePath) {
 	const source = readFileSync(svelteFilePath, 'utf8');
 
 	// 1. Strip TypeScript from <script lang="ts"> just like the published build.
-	const { code: preprocessed } = await preprocess(
-		source,
-		vitePreprocess({ script: true }),
-		{ filename: svelteFilePath }
-	);
+	const { code: preprocessed } = await preprocess(source, vitePreprocess({ script: true }), {
+		filename: svelteFilePath
+	});
 
 	// 2. Compile with the Svelte 5 compiler (client, CSS folded into the JS).
 	const { js, warnings } = compile(preprocessed, {

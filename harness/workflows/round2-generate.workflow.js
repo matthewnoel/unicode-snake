@@ -1,12 +1,12 @@
 export const meta = {
-  name: 'snake-script-bestofn-r2',
-  description: 'Round 2: beat 2371 gzip, seeded toward flat-index + golf winners',
-  phases: [{ title: 'Generate', detail: '10 candidates seeded toward winners' }],
-}
+	name: 'snake-script-bestofn-r2',
+	description: 'Round 2: beat 2371 gzip, seeded toward flat-index + golf winners',
+	phases: [{ title: 'Generate', detail: '10 candidates seeded toward winners' }]
+};
 
-const MR = ['Math', 'random'].join('.')
-const RND = MR + '()'
-const FLOOR = 'Math.floor(' + RND + ' * 6)'
+const MR = ['Math', 'random'].join('.');
+const RND = MR + '()';
+const FLOOR = 'Math.floor(' + RND + ' * 6)';
 
 const SPEC = `
 You are writing the <script lang="ts"> block of a Svelte 5 snake-game component.
@@ -80,36 +80,70 @@ Return: approach (one short line) and script (the complete <script lang="ts">...
 `;
 
 const STRATEGIES = [
-  { id: 'r2-01', hint: 'Take the flat-index golfed approach and squeeze every remaining byte: combine variable declarations, remove intermediate variables, fold conditionals. Aim well under 2371.' },
-  { id: 'r2-02', hint: 'Single-pass board: build from a 36-slot array pre-filled with backgroundChar, set tail indices, then food index, then head index, then join into 6 rows — golfed to the maximum. See if it undercuts the per-cell-loop board.' },
-  { id: 'r2-03', hint: 'Avoid scanning the tail twice (once for the board, once for self-collision). Share one structure/lookup for both board rendering and collision to cut operations and code.' },
-  { id: 'r2-04', hint: 'Minimize the number of reactive $state declarations to the absolute floor; fold score/best into derived expressions; keep only the essential reactive roots. Fewer reactivity roots = less compiled glue.' },
-  { id: 'r2-05', hint: 'Explore deriving board with a plain $derived array expression (not $derived.by) and the most compact single-expression row builder. Compare compiled glue of $derived vs $derived.by.' },
-  { id: 'r2-06', hint: 'Golf the high-score / localStorage path to the bare minimum (load + persist) using the terse typeof guard and unary + parsing, while keeping the no-key behavior correct.' },
-  { id: 'r2-07', hint: 'Snake stored as ONE index array including the head at index 0 (no separate head var); unshift new head, pop unless eating; render snake[0] as player and the rest as tail. Golf it to beat 2371.' },
-  { id: 'r2-08', hint: 'Micro-optimize the board loop: precompute nothing redundant, build rows with minimal arithmetic, and use the shortest correct glyph-selection ternary chain. Combine with all known winning tricks.' },
-  { id: 'r2-09', hint: 'Wildcard: keep a single 36-char board STRING as state and mutate only the changed cells per move (head, vacated tail, new food, eaten food), slicing it into rows for display. See if incremental update is smaller than full rebuild.' },
-  { id: 'r2-10', hint: 'All-out golf: combine flat-index, one-loop board, $effect lifecycle, single 500ms timer, column-delta wall test, key[5] decode, terse storage guard, and the fewest possible declarations into the smallest correct script you can write. This is the maximum-compression attempt.' },
-]
+	{
+		id: 'r2-01',
+		hint: 'Take the flat-index golfed approach and squeeze every remaining byte: combine variable declarations, remove intermediate variables, fold conditionals. Aim well under 2371.'
+	},
+	{
+		id: 'r2-02',
+		hint: 'Single-pass board: build from a 36-slot array pre-filled with backgroundChar, set tail indices, then food index, then head index, then join into 6 rows — golfed to the maximum. See if it undercuts the per-cell-loop board.'
+	},
+	{
+		id: 'r2-03',
+		hint: 'Avoid scanning the tail twice (once for the board, once for self-collision). Share one structure/lookup for both board rendering and collision to cut operations and code.'
+	},
+	{
+		id: 'r2-04',
+		hint: 'Minimize the number of reactive $state declarations to the absolute floor; fold score/best into derived expressions; keep only the essential reactive roots. Fewer reactivity roots = less compiled glue.'
+	},
+	{
+		id: 'r2-05',
+		hint: 'Explore deriving board with a plain $derived array expression (not $derived.by) and the most compact single-expression row builder. Compare compiled glue of $derived vs $derived.by.'
+	},
+	{
+		id: 'r2-06',
+		hint: 'Golf the high-score / localStorage path to the bare minimum (load + persist) using the terse typeof guard and unary + parsing, while keeping the no-key behavior correct.'
+	},
+	{
+		id: 'r2-07',
+		hint: 'Snake stored as ONE index array including the head at index 0 (no separate head var); unshift new head, pop unless eating; render snake[0] as player and the rest as tail. Golf it to beat 2371.'
+	},
+	{
+		id: 'r2-08',
+		hint: 'Micro-optimize the board loop: precompute nothing redundant, build rows with minimal arithmetic, and use the shortest correct glyph-selection ternary chain. Combine with all known winning tricks.'
+	},
+	{
+		id: 'r2-09',
+		hint: 'Wildcard: keep a single 36-char board STRING as state and mutate only the changed cells per move (head, vacated tail, new food, eaten food), slicing it into rows for display. See if incremental update is smaller than full rebuild.'
+	},
+	{
+		id: 'r2-10',
+		hint: 'All-out golf: combine flat-index, one-loop board, $effect lifecycle, single 500ms timer, column-delta wall test, key[5] decode, terse storage guard, and the fewest possible declarations into the smallest correct script you can write. This is the maximum-compression attempt.'
+	}
+];
 
 const SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    approach: { type: 'string', description: 'one short line naming the optimization angle' },
-    script: { type: 'string', description: 'the complete <script lang="ts"> ... </script> block' },
-  },
-  required: ['approach', 'script'],
-}
+	type: 'object',
+	additionalProperties: false,
+	properties: {
+		approach: { type: 'string', description: 'one short line naming the optimization angle' },
+		script: { type: 'string', description: 'the complete <script lang="ts"> ... </script> block' }
+	},
+	required: ['approach', 'script']
+};
 
-phase('Generate')
+phase('Generate');
 const out = await parallel(
-  STRATEGIES.map((s) => () =>
-    agent(SPEC + '\n\n## YOUR ANGLE (candidate ' + s.id + ', scratch id ' + s.id + ')\n' + s.hint, {
-      label: s.id,
-      phase: 'Generate',
-      schema: SCHEMA,
-    }).then((r) => (r ? { id: s.id, approach: r.approach, script: r.script } : null))
-  )
-)
-return out.filter(Boolean)
+	STRATEGIES.map(
+		(s) => () =>
+			agent(
+				SPEC + '\n\n## YOUR ANGLE (candidate ' + s.id + ', scratch id ' + s.id + ')\n' + s.hint,
+				{
+					label: s.id,
+					phase: 'Generate',
+					schema: SCHEMA
+				}
+			).then((r) => (r ? { id: s.id, approach: r.approach, script: r.script } : null))
+	)
+);
+return out.filter(Boolean);

@@ -21,7 +21,17 @@ node harness/run-candidate.mjs <path-to-candidate-Snake.svelte>
 Prints one line of JSON to stdout and a human summary to stderr:
 
 ```json
-{"candidate":"...","pass":true,"gzip":2542,"min":7032,"behaviorPass":true,"cssPass":true,"total":18,"failed":[],"error":null}
+{
+	"candidate": "...",
+	"pass": true,
+	"gzip": 2542,
+	"min": 7032,
+	"behaviorPass": true,
+	"cssPass": true,
+	"total": 18,
+	"failed": [],
+	"error": null
+}
 ```
 
 `pass = behaviorPass && cssPass`. **Run candidates sequentially** — they share the

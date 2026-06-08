@@ -56,9 +56,7 @@ for (const f of scripts) {
 	);
 }
 
-const survivors = results
-	.filter((r) => r.pass)
-	.sort((a, b) => a.gzip - b.gzip);
+const survivors = results.filter((r) => r.pass).sort((a, b) => a.gzip - b.gzip);
 
 writeFileSync(join(roundDir, 'results.json'), JSON.stringify(results, null, 2));
 writeFileSync(join(roundDir, 'ranked.json'), JSON.stringify(survivors, null, 2));
@@ -73,4 +71,5 @@ console.log(
 	`\n${survivors.length}/${results.length} passed.` +
 		(failed.length ? ` Failed: ${failed.map((r) => r.name).join(', ')}` : '')
 );
-if (survivors.length) console.log(`Best this round: ${survivors[0].name} @ ${survivors[0].gzip} gzip`);
+if (survivors.length)
+	console.log(`Best this round: ${survivors[0].name} @ ${survivors[0].gzip} gzip`);
