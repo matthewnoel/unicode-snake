@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🏃 Run actions/checkout@v4
-        uses: actions/checkout@v4
-      - name: 🏃 Run actions/setup-node@v4
-        uses: actions/setup-node@v4
+      - name: 🏃 Run actions/checkout@v6
+        uses: actions/checkout@v6
+      - name: 🏃 Run actions/setup-node@v6
+        uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -28,7 +28,7 @@ jobs:
       - name: 📝 Format project
         run: npm run format
       - name: 💾 Add and commit changes
-        uses: EndBug/add-and-commit@v9.1.4
+        uses: EndBug/add-and-commit@v10.0.0
       - name: 🔍 Lint project
         run: npm run lint
       - name: ✅ Svelte check
